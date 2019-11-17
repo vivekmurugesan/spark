@@ -20,7 +20,9 @@ public class ChicagoTaxiDataProcess {
 	private String inputPath = "taxi_trip_community_od_input";
 	private String outputPath = "output";
 	
-	private String NA = "\\N";
+	private static final String NA = "\\N";
+	
+	private static final String delim = "\001";
 	
 	public static void main(String[] args) {
 		
@@ -92,7 +94,7 @@ public class ChicagoTaxiDataProcess {
 		JavaRDD<String> text = sc.textFile(inputPath);
 		
 		text = text.filter(x -> {
-			String[] tokens = x.split("\t");
+			String[] tokens = x.split(delim);
 			if(tokens.length < 5)
 				return false;
 			
@@ -103,7 +105,7 @@ public class ChicagoTaxiDataProcess {
 		});
 		
 		JavaRDD<TripDetails> tripDetailsRdd = text.map(x -> {
-			String[] tokens = x.split("\t");
+			String[] tokens = x.split(delim);
 			TripDetails tripDetails = new TripDetails();
 			tripDetails.setPikcupCommunity(Integer.parseInt(tokens[0]));
 			tripDetails.setDropoffCommunity(Integer.parseInt(tokens[1]));
