@@ -1,0 +1,49 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>edureka</groupId>
+  <artifactId>edureka-hbase</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <name>edureka-hbase</name>
+  <description>edureka-hbase</description>
+ 
+  <dependencies>
+  	<!-- https://mvnrepository.com/artifact/org.apache.hbase/hbase-client -->
+	<dependency>
+	    <groupId>org.apache.hbase</groupId>
+	    <artifactId>hbase-client</artifactId>
+	    <version>1.2.0</version>
+	</dependency>
+  </dependencies>
+  
+  <build>
+          <plugins>
+             <plugin>
+                 <groupId>org.apache.maven.plugins</groupId>
+                 <artifactId>maven-assembly-plugin</artifactId>
+                 <configuration>
+                    <!-- get all project dependencies -->
+                    <descriptorRefs>
+                            <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                    <!-- MainClass in manifest make a executable jar -->
+                    <archive>
+                            <manifest>
+                                    <mainClass>com.edureka.hbase.InsertData</mainClass>
+                            </manifest>
+                    </archive>
+                 </configuration>
+                 <executions>
+                         <execution>
+                                 <id>make-assembly</id>
+                                 <!-- bind to the packaging phase -->
+                                 <phase>package</phase>
+                                 <goals>
+                                         <goal>single</goal>
+                                 </goals>
+                         </execution>
+                 </executions>
+             </plugin>
+          </plugins>
+        </build>
+  
+</project>
