@@ -75,13 +75,18 @@ public class InsertData {
 
 		// Company_Name, daily_trip_count, daily_total_amt, daily_total_miles, daily_total_mins, daily_avg_amt, daily_avg_miles, daily_avg_mins
 		String line = br.readLine();
+		int index=1;
 
-		while(line != null && !line.isBlank()) {
+		System.out.println("Inserting company summary..");
+
+		while(line != null && !line.isEmpty()) {
+			System.out.println("inserting::" + index++);
 			String[] tokens = line.split(delim);
 			if(tokens.length < 8)
 				continue;
 
-			Put p = new Put(Bytes.toBytes(tokens[0])); // Company name as row id.
+			String companyName = (tokens[0] == null || tokens[0].isEmpty())?"Unknown":tokens[0];
+			Put p = new Put(Bytes.toBytes(companyName)); // Company name as row id.
 
 			// add values using add() method
 			p.add(Bytes.toBytes(companyColFamilies[0]),
@@ -103,8 +108,9 @@ public class InsertData {
 
 			// save the put Instance to the HTable.
 			hTable.put(p);
+			line = br.readLine();
 		}
-		System.out.println("data inserted successfully");
+		System.out.println("data inserted successfully for company..");
 
 		// close HTable instance
 		hTable.close();
@@ -119,11 +125,16 @@ public class InsertData {
 
 		// pickup_community, daily_trip_count, daily_total_amt, daily_total_miles, daily_total_mins, daily_avg_amt, daily_avg_miles, daily_avg_mins
 		String line = br.readLine();
+		System.out.println("Inserting for community orig");
+		int index = 1;
 
-		while(line != null && !line.isBlank()) {
+		while(line != null && !line.isEmpty()) {
+			System.out.println("Inserting record::" + index++);
 			String[] tokens = line.split(delim);
-			if(tokens.length < 8)
+			if(tokens.length < 8){
+				System.out.println("Ignoring.. line::" + line + " " + tokens.length);
 				continue;
+			}
 
 			Put p = new Put(Bytes.toBytes(tokens[0])); // Community id as row id.
 
@@ -147,8 +158,10 @@ public class InsertData {
 
 			// save the put Instance to the HTable.
 			hTable.put(p);
+			line = br.readLine();
+
 		}
-		System.out.println("data inserted successfully");
+		System.out.println("data inserted successfully for community orig");
 
 		// close HTable instance
 		hTable.close();
@@ -164,7 +177,7 @@ public class InsertData {
 		// pickup_community, daily_trip_count, daily_total_amt, daily_total_miles, daily_total_mins, daily_avg_amt, daily_avg_miles, daily_avg_mins
 		String line = br.readLine();
 
-		while(line != null && !line.isBlank()) {
+		while(line != null && !line.isEmpty()) {
 			String[] tokens = line.split(delim);
 			if(tokens.length < 8)
 				continue;
@@ -191,6 +204,7 @@ public class InsertData {
 
 			// save the put Instance to the HTable.
 			hTable.put(p);
+			line = br.readLine();
 		}
 		System.out.println("data inserted successfully");
 
