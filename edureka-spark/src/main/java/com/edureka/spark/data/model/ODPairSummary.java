@@ -30,6 +30,11 @@ public class ODPairSummary implements Serializable {
 	
 	public ODPairSummary() {
 	}
+	
+	public ODPairSummary(int pickupCommId, int dropoffCommId) {
+		this.pickupCommunity = pickupCommId;
+		this.dropoffCommunity = dropoffCommId;
+	}
 
 	public int getPickupCommunity() {
 		return pickupCommunity;

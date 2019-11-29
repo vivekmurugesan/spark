@@ -74,7 +74,14 @@ public class ChicagoTaxiDataProcess {
 			double avgMiles = tripTotalMiles/tripCount;
 			double avgMins = tripTotalMins * 1.0/tripCount;
 			
-			ODPairSummary result = new ODPairSummary();
+			String key = x._1;
+			String[] tokens = key.split("__");
+			int pickupCommunityId = Integer.parseInt(tokens[0]);
+			int dropoffCommunityId = Integer.parseInt(tokens[1]);
+			
+			ODPairSummary result = new ODPairSummary(pickupCommunityId, 
+					dropoffCommunityId);
+			
 			result.setTripCount(tripCount);
 			result.setTotalAmount(tripTotalAmt);
 			result.setTotalMiles(tripTotalMiles);
