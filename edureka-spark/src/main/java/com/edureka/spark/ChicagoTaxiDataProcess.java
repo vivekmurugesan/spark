@@ -22,7 +22,7 @@ public class ChicagoTaxiDataProcess {
 	
 	private static final String NA = "\\N";
 	
-	private static final String delim = "\001";
+	private static final String delim = "\t";
 	
 	public static void main(String[] args) {
 		
