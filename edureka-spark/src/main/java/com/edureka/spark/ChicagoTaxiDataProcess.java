@@ -98,7 +98,9 @@ public class ChicagoTaxiDataProcess {
 			if(tokens.length < 5)
 				return false;
 			
-			if(tokens[0].contentEquals(NA) || tokens[1].contentEquals(NA))
+			if(tokens[0].contentEquals(NA) || tokens[1].contentEquals(NA)
+					|| tokens[2].contentEquals(NA) || tokens[3].contentEquals(NA)
+					|| tokens[4].contentEquals(NA))
 				return false;
 			else 
 				return true;
