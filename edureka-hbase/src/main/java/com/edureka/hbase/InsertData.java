@@ -61,6 +61,11 @@ public class InsertData {
 	
 	public HTable createTableHandle(String tableName) throws IOException {
 		Configuration conf = HBaseConfiguration.create();
+		
+		conf.clear();
+        conf.set("hbase.zookeeper.quorum", "ip-20-0-31-210.ec2.internal");
+        conf.set("hbase.zookeeper.property.clientPort", "2181");
+
 
 		HTable hTable = new HTable(conf, tableName);
 		
