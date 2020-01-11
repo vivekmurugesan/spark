@@ -1,5 +1,6 @@
 package com.edureka.spark.movielens;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -18,7 +19,7 @@ import scala.Tuple2;
  * @author vivek
  *
  */
-public class MoviesDataProcessor {
+public class MoviesDataProcessor implements Serializable {
 
 	
 	private String inputPath = "/mnt/bigdatapgp/edureka_549997/datasets/movie_dataset";

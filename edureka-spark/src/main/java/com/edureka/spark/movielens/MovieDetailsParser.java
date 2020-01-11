@@ -1,5 +1,6 @@
 package com.edureka.spark.movielens;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,7 +20,7 @@ import com.google.gson.JsonObject;
  * @author vivek
  *
  */
-public class MovieDetailsParser {
+public class MovieDetailsParser implements Serializable {
 
 	// Format
 	private final static String FORMAT_STR =
