@@ -1,3 +1,16 @@
+1. Chicago Taxi Processing.
+
 spark-submit --master yarn --deploy-mode cluster --class com.edureka.spark.ChicagoTaxiDataProcess Spark-Code/spark/edureka-spark/target/edureka-spark-0.0.1-SNAPSHOT-jar-with-dependencies.jar taxi_trip_community_od_input output > out.txt 2>err.txt &
 
-spark-submit --master local[16] --class com.edureka.spark.ChicagoTaxiDataProcess Spark-Code/spark/edureka-spark/target/edureka-spark-0.0.1-SNAPSHOT-jar-with-dependencies.jar taxi_trip_community_od_input output > out.txt 2>err.txt &
+spark-submit --master local[16] --executor-memory 16g --driver-memory 4g --class com.edureka.spark.ChicagoTaxiDataProcess Spark-Code/spark/edureka-spark/target/edureka-spark-0.0.1-SNAPSHOT-jar-with-dependencies.jar taxi_trip_community_od_input_tsv output > out.txt 2>err.txt &
+
+spark2-submit --jars /mnt/bigdatapgp/edureka_549997/Spark-Code/spark/edureka-spark/target/edureka-spark-0.0.1-SNAPSHOT-jar-withdependencies.jar --master local[16] --executor-memory 16g --driver-memory 4g --class com.edureka.spark.ChicagoTaxiDataProcess /mnt/bigdatapgp/edureka_549997/taxi_trip_community_od_input_tsv Spark-Output >out.txt 2>err.txt &
+
+
+spark-submit --master local[16] --executor-memory 16g --driver-memory 4g --class com.edureka.spark.ChicagoTaxiDataProcess Spark-Code/spark/edureka-spark/target/edureka-spark-0.0.1-SNAPSHOT-jar-with-dependencies.jar /mnt/bigdatapgp/edureka_549997/taxi_trip_community_od_input_tsv output > out.txt 2>err.txt &
+
+
+2. Movie Lens Processing
+
+spark-submit --master local[16] --class com.edureka.spark.movielens.MoviesDataProcessor target/edureka-spark-0.0.1-SNAPSHOT-jar-with-dependencies.jar /mnt/bigd
+atapgp/edureka_549997/datasets/movie_dataset/ movies_output > out.txt 2>err.txt &
