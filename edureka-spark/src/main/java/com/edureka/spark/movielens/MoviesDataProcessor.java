@@ -64,22 +64,25 @@ public class MoviesDataProcessor implements Serializable {
 	
 	public void computeRatingCountTopN(JavaSparkContext sc, JavaPairRDD<Integer, Double> ratingsRdd,
 			JavaPairRDD<Integer, MovieDetails> movieDetailsRdd) {
+		
 		JavaPairRDD<Integer, Integer> ratingCountRdd = 
 				ratingsRdd.mapToPair(x -> new Tuple2<>(x._1, 1))
 				.reduceByKey((x,y) -> x+y);
 		
-		JavaPairRDD<Integer, Integer> ratingCountReversed = ratingCountRdd.mapToPair(x -> 
-				new Tuple2<>(x._2, x._1));
-		
-		List<Tuple2<Integer, Integer>> top10Movies = 
-				ratingCountReversed.sortByKey(new SerializableComparator()).top(topN);
-		
-		top10Movies.forEach(System.out::println);
-		
-		List<Tuple2<Integer, Integer>> top10Movies2 =
-				ratingCountRdd.top(topN, new SerializableTupleComparator());
-		
-		top10Movies2.forEach(System.out::println);
+		/*
+		 * JavaPairRDD<Integer, Integer> ratingCountReversed =
+		 * ratingCountRdd.mapToPair(x -> new Tuple2<>(x._2, x._1));
+		 * 
+		 * List<Tuple2<Integer, Integer>> top10Movies =
+		 * ratingCountReversed.sortByKey(new SerializableComparator()).top(topN);
+		 * 
+		 * top10Movies.forEach(System.out::println);
+		 * 
+		 * List<Tuple2<Integer, Integer>> top10Movies2 = ratingCountRdd.top(topN, new
+		 * SerializableTupleComparator());
+		 * 
+		 * top10Movies2.forEach(System.out::println);
+		 */
 		
 		
 		
