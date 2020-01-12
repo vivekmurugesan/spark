@@ -109,7 +109,7 @@ public class MoviesDataProcessor implements Serializable {
 		
 		JavaRDD<String> toPrintRdd = sc.parallelize(toPrint);
 		
-		toPrintRdd.saveAsTextFile(outputPath+"/RatingCount");
+		toPrintRdd.saveAsTextFile(outputPath+"/RatingCountTopN");
 	}
 	
 	public void computeRatingMeanTopN(JavaSparkContext sc, JavaPairRDD<Integer, Double> ratingsRdd,
@@ -148,7 +148,7 @@ public class MoviesDataProcessor implements Serializable {
 		
 		JavaRDD<String> toPrintRdd = sc.parallelize(toPrint);
 		
-		toPrintRdd.saveAsTextFile(outputPath+"/RatingCount");
+		toPrintRdd.saveAsTextFile(outputPath+"/MeanRatingTopN");
 	}
 	
 	public JavaPairRDD<Integer, Double> processRatings(JavaSparkContext sc) {
