@@ -45,7 +45,8 @@ public class MoviesDataProcessor implements Serializable {
 		
 		MoviesDataProcessor processor = new MoviesDataProcessor(args[0], args[1]);
 		
-		processor.processRatings(sc);
+		//processor.processRatings(sc);
+		processor.computeStats(sc);
 	}
 	
 	public MoviesDataProcessor(String inputPath, String outputPath) {
