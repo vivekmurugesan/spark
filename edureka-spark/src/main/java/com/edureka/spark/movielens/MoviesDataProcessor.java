@@ -22,6 +22,10 @@ import scala.Tuple2;
 public class MoviesDataProcessor implements Serializable {
 
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String inputPath = "/mnt/bigdatapgp/edureka_549997/datasets/movie_dataset";
 	private String outputPath = "output";
 	
@@ -49,20 +53,16 @@ public class MoviesDataProcessor implements Serializable {
 		this.outputPath = outputPath;
 	}
 	
-	public void processRatings(JavaSparkContext sc) {
+	public void computeStats(JavaSparkContext sc) {
 		
-		JavaRDD<String> ratingsStringRdd = sc.textFile(inputPath + ratingsFileName);
+		JavaPairRDD<Integer, Double> ratingsRdd = processRatings(sc);
+		JavaPairRDD<Integer, MovieDetails> movieDetailsRdd = processMovieDetails(sc);
 		
-		ratingsStringRdd = ratingsStringRdd.filter(x -> !x.startsWith("userId"));
-		
-		JavaPairRDD<Integer, Double> ratingsRdd = ratingsStringRdd.mapToPair(x ->{
-			String[] tokens = x.split(delim);
-			int movieId = Integer.parseInt(tokens[1]);
-			double rating = Double.parseDouble(tokens[2]);
-			
-			return new Tuple2<>(movieId, rating);
-		});
-		
+		computeRatingCountTopN(sc, ratingsRdd, movieDetailsRdd);
+	}
+	
+	public void computeRatingCountTopN(JavaSparkContext sc, JavaPairRDD<Integer, Double> ratingsRdd,
+			JavaPairRDD<Integer, MovieDetails> movieDetailsRdd) {
 		JavaPairRDD<Integer, Integer> ratingCountRdd = 
 				ratingsRdd.mapToPair(x -> new Tuple2<>(x._1, 1))
 				.reduceByKey((x,y) -> x+y);
@@ -80,7 +80,7 @@ public class MoviesDataProcessor implements Serializable {
 		
 		top10Movies2.forEach(System.out::println);
 		
-		JavaPairRDD<Integer, MovieDetails> movieDetailsRdd = processMovieDetails(sc);
+		
 		
 		JavaPairRDD<Integer, Tuple2<Integer, MovieDetails>> joined = ratingCountRdd.join(movieDetailsRdd);
 		
@@ -106,6 +106,23 @@ public class MoviesDataProcessor implements Serializable {
 		JavaRDD<String> toPrintRdd = sc.parallelize(toPrint);
 		
 		toPrintRdd.saveAsTextFile(outputPath+"/RatingCount");
+	}
+	
+	public JavaPairRDD<Integer, Double> processRatings(JavaSparkContext sc) {
+		
+		JavaRDD<String> ratingsStringRdd = sc.textFile(inputPath + ratingsFileName);
+		
+		ratingsStringRdd = ratingsStringRdd.filter(x -> !x.startsWith("userId"));
+		
+		JavaPairRDD<Integer, Double> ratingsRdd = ratingsStringRdd.mapToPair(x ->{
+			String[] tokens = x.split(delim);
+			int movieId = Integer.parseInt(tokens[1]);
+			double rating = Double.parseDouble(tokens[2]);
+			
+			return new Tuple2<>(movieId, rating);
+		});
+		
+		return ratingsRdd;
 		
 	}
 	
@@ -125,7 +142,12 @@ public class MoviesDataProcessor implements Serializable {
 	
 	
 	
-	static class SerializableTupleComparator implements Comparator<Tuple2<Integer, Integer>>{
+	static class SerializableTupleComparator implements Serializable,Comparator<Tuple2<Integer, Integer>>{
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 
 		@Override
 		public int compare(Tuple2<Integer, Integer> o1, Tuple2<Integer, Integer> o2) {
@@ -134,7 +156,12 @@ public class MoviesDataProcessor implements Serializable {
 		
 	}
 	
-	static class SerializableTupleComparator2 implements Comparator<Tuple2<Integer, Tuple2<Integer, MovieDetails>>>{
+	static class SerializableTupleComparator2 implements Serializable,Comparator<Tuple2<Integer, Tuple2<Integer, MovieDetails>>>{
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 
 		@Override
 		public int compare(Tuple2<Integer, Tuple2<Integer, MovieDetails>> o1,
@@ -145,7 +172,12 @@ public class MoviesDataProcessor implements Serializable {
 	}
 	
 	
-	static class SerializableComparator implements Comparator<Integer>{
+	static class SerializableComparator implements Serializable,Comparator<Integer>{
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 
 		@Override
 		public int compare(Integer o1, Integer o2) {
