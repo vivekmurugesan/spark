@@ -112,6 +112,45 @@ public class MoviesDataProcessor implements Serializable {
 		toPrintRdd.saveAsTextFile(outputPath+"/RatingCount");
 	}
 	
+	public void computeRatingMeanTopN(JavaSparkContext sc, JavaPairRDD<Integer, Double> ratingsRdd,
+			JavaPairRDD<Integer, MovieDetails> movieDetailsRdd) {
+		
+		JavaPairRDD<Integer, Integer> ratingCountRdd = 
+				ratingsRdd.mapToPair(x -> new Tuple2<>(x._1, 1))
+				.reduceByKey((x,y) -> x+y);
+		
+		JavaPairRDD<Integer, Double> ratingSumRdd = 
+				ratingsRdd.foldByKey(0.0, (x,y) -> x+y);
+		
+		JavaPairRDD<Integer, Double> ratingMeanRdd = 
+				ratingSumRdd.join(ratingCountRdd).mapToPair(x -> new Tuple2<>(x._1, (x._2._1/ (x._2._2*1.0))));
+		
+		JavaPairRDD<Integer, Tuple2<Double, MovieDetails>> joined = ratingMeanRdd.join(movieDetailsRdd);
+		
+		List<Tuple2<Integer, Tuple2<Double, MovieDetails>>> ratingCountTopNList =
+			joined.top(topN, new SerializableTupleComparator3());
+		
+		List<String> toPrint = new ArrayList<>();
+		
+		ratingCountTopNList.forEach(x ->
+				{
+					int movieId = x._1;
+					double meanRating = x._2._1;
+					MovieDetails movie = x._2._2;
+					toPrint.add(movieId+","+
+							meanRating+","+
+							movie.getTitle()+","+
+							movie.getBudget()+","+
+							movie.getRevenue()+","+
+							movie.getVoteCount()+","+
+							movie.getVoteAverage()+",");
+				});
+		
+		JavaRDD<String> toPrintRdd = sc.parallelize(toPrint);
+		
+		toPrintRdd.saveAsTextFile(outputPath+"/RatingCount");
+	}
+	
 	public JavaPairRDD<Integer, Double> processRatings(JavaSparkContext sc) {
 		
 		JavaRDD<String> ratingsStringRdd = sc.textFile(inputPath + ratingsFileName);
@@ -170,6 +209,21 @@ public class MoviesDataProcessor implements Serializable {
 		@Override
 		public int compare(Tuple2<Integer, Tuple2<Integer, MovieDetails>> o1,
 				Tuple2<Integer, Tuple2<Integer, MovieDetails>> o2) {
+			return o2._2._1.compareTo(o1._2._1);
+		}
+		
+	}
+	
+	static class SerializableTupleComparator3 implements Serializable,Comparator<Tuple2<Integer, Tuple2<Double, MovieDetails>>>{
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public int compare(Tuple2<Integer, Tuple2<Double, MovieDetails>> o1,
+				Tuple2<Integer, Tuple2<Double, MovieDetails>> o2) {
 			return o2._2._1.compareTo(o1._2._1);
 		}
 		
