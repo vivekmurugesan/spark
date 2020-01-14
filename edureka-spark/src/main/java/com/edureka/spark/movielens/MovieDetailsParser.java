@@ -22,6 +22,11 @@ import com.google.gson.JsonObject;
  */
 public class MovieDetailsParser implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	// Format
 	private final static String FORMAT_STR =
 			"adult,belongs_to_collection,budget,genres,homepage,id,imdb_id,"
@@ -59,6 +64,15 @@ public class MovieDetailsParser implements Serializable {
 		
 		System.out.println("Movie1 Details::\n" + 
 				movie1);
+		
+		String movie2Str = "False,,0,[],,290157,tt0110217,en,Jupiter's Wife,\"Michel Negroponte, a documentary filmmaker, meets Maggie one day in Central Park. Maggie claims to be married to the god Jupiter and the " + 
+				"daughter of actor Robert Ryan. Michel gets to know Maggie over the next couple of years, and attempts to use her often outlandish stories as clues to reconstruct her past." + 
+				" - Written by James Meek\",0.001178,/uUi23HjvDFYGfuVlCBGozUY1Ab4.jpg,[],[],1995-01-01,0,87.0,[],Released,A Haunting Real Life Mystery,Jupiter's Wife,False,0.0,0";
+	
+		MovieDetails movie2 = parse(movie2Str);
+		
+		System.out.println("Movie2 Details::\n" + 
+				movie2);
 	}
 
 	public static MovieDetails parse(String input) {
@@ -74,9 +88,11 @@ public class MovieDetailsParser implements Serializable {
 		
 		String[] tokens = tokensList.toArray(new String[0]);
 		
-		for(int i=0;i<tokens.length;i++)
+		for(int i=0;i<tokens.length;i++) {
+			System.out.printf("Token: %d before unqote: %s \n",i, tokens[i]);
 			tokens[i] = unquote(tokens[i]);
-		
+			System.out.printf("Token: %d after unqote: %s \n",i, tokens[i]);
+		}
 		movie.setAdultMovie(Boolean.parseBoolean(tokens[0]));
 		movie.setBelongsTo(tokens[1]);
 		movie.setBudget(Long.parseLong(tokens[2]));
