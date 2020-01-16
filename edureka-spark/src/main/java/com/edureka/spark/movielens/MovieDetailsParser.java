@@ -86,38 +86,46 @@ public class MovieDetailsParser implements Serializable {
 		MovieDetails movie = new MovieDetails();
 		//String[] tokens = input.split(delim);
 		
-		String[] tokens = tokensList.toArray(new String[0]);
-		
-		for(int i=0;i<tokens.length;i++) {
-			System.out.printf("Token: %d before unqote: %s \n",i, tokens[i]);
-			tokens[i] = unquote(tokens[i]);
-			System.out.printf("Token: %d after unqote: %s \n",i, tokens[i]);
+		try {
+
+			String[] tokens = tokensList.toArray(new String[0]);
+
+			for(int i=0;i<tokens.length;i++) {
+				System.out.printf("Token: %d before unqote: %s \n",i, tokens[i]);
+				tokens[i] = unquote(tokens[i]);
+				System.out.printf("Token: %d after unqote: %s \n",i, tokens[i]);
+			}
+			movie.setAdultMovie(Boolean.parseBoolean(tokens[0]));
+			movie.setBelongsTo(tokens[1]);
+			movie.setBudget(Long.parseLong(tokens[2]));
+			String genreString = tokens[3];
+			movie.setGenres(parseGenreStr(genreString));
+			movie.setHomePage(tokens[4]);
+			movie.setId(Integer.parseInt(tokens[5]));
+			movie.setImdbId(tokens[6]);
+			movie.setOriginalLanguage(tokens[7]);
+			movie.setOriginalTitle(tokens[8]);
+			movie.setOverview(tokens[9]);
+			movie.setPopularity(Double.parseDouble(tokens[10]));
+			movie.setPosterPath(tokens[11]);
+			movie.setProductionCompanies(tokens[12]);
+			movie.setProductionCountries(tokens[13]);
+			movie.setReleaseDate(tokens[14]);
+			movie.setRevenue(Long.parseLong(tokens[15]));
+			movie.setRuntime(Double.parseDouble(tokens[16]));
+			movie.setSpokenLanguages(tokens[17]);
+			movie.setStatus(tokens[18]);
+			movie.setTagline(tokens[19]);
+			movie.setTitle(tokens[20]);
+			movie.setVideo(Boolean.parseBoolean(tokens[21]));
+			movie.setVoteAverage(Double.parseDouble(tokens[22]));
+			movie.setVoteCount(Long.parseLong(tokens[23]));
+		}catch(Exception e) {
+			System.err.println("Exception in processing: \n" +
+					input);
+			e.printStackTrace();
+			movie.setId(-1);
 		}
-		movie.setAdultMovie(Boolean.parseBoolean(tokens[0]));
-		movie.setBelongsTo(tokens[1]);
-		movie.setBudget(Long.parseLong(tokens[2]));
-		String genreString = tokens[3];
-		movie.setGenres(parseGenreStr(genreString));
-		movie.setHomePage(tokens[4]);
-		movie.setId(Integer.parseInt(tokens[5]));
-		movie.setImdbId(tokens[6]);
-		movie.setOriginalLanguage(tokens[7]);
-		movie.setOriginalTitle(tokens[8]);
-		movie.setOverview(tokens[9]);
-		movie.setPopularity(Double.parseDouble(tokens[10]));
-		movie.setPosterPath(tokens[11]);
-		movie.setProductionCompanies(tokens[12]);
-		movie.setProductionCountries(tokens[13]);
-		movie.setReleaseDate(tokens[14]);
-		movie.setRevenue(Long.parseLong(tokens[15]));
-		movie.setRuntime(Double.parseDouble(tokens[16]));
-		movie.setSpokenLanguages(tokens[17]);
-		movie.setStatus(tokens[18]);
-		movie.setTagline(tokens[19]);
-		movie.setTitle(tokens[20]);
-		movie.setVideo(Boolean.parseBoolean(tokens[21]));
-		movie.setVoteAverage(Double.parseDouble(tokens[22]));
-		movie.setVoteCount(Long.parseLong(tokens[23]));
 
 		return movie;
 	}

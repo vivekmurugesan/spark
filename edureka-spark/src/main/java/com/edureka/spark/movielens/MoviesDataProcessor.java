@@ -180,6 +180,13 @@ public class MoviesDataProcessor implements Serializable {
 			return new Tuple2<>(movieObj.getId(), movieObj);
 		});
 		
+		System.out.println(".. Movie dtails record count::" + movieDetailsRdd.count());
+		
+		movieDetailsRdd.filter(x -> (x._1 != -1));
+		
+		System.out.println(".. Movie dtails record count (after filtering)::" 
+				+ movieDetailsRdd.count());
+		
 		return movieDetailsRdd;
 	}
 	
