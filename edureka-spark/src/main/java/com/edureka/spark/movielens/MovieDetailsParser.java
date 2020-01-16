@@ -79,9 +79,13 @@ public class MovieDetailsParser implements Serializable {
 		
 		List<String> tokensList = new ArrayList<>();
 		
-		Splitter.on(
+		Iterable<String> tokensIter = Splitter.on(
 				Pattern.compile(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)"))
-				.split(input).forEach(x -> tokensList.add(x));;
+				.split(input);
+		for(String x : tokensIter ) {
+			tokensList.add(x);
+		}
+
 		
 		MovieDetails movie = new MovieDetails();
 		//String[] tokens = input.split(delim);
