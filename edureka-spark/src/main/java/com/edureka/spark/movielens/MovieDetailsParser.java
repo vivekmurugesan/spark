@@ -99,35 +99,45 @@ public class MovieDetailsParser implements Serializable {
 				tokens[i] = unquote(tokens[i]);
 				System.out.printf("Token: %d after unqote: %s \n",i, tokens[i]);
 			}
-			movie.setAdultMovie(Boolean.parseBoolean(tokens[0]));
+			movie.setAdultMovie(
+					((tokens[0].length()>0)?Boolean.parseBoolean(tokens[0]):Boolean.FALSE));
 			movie.setBelongsTo(tokens[1]);
-			movie.setBudget(Long.parseLong(tokens[2]));
+			movie.setBudget(
+					((tokens[2].length()>0)?Long.parseLong(tokens[2]):0L));
 			String genreString = tokens[3];
 			movie.setGenres(parseGenreStr(genreString));
 			movie.setHomePage(tokens[4]);
-			movie.setId(Integer.parseInt(tokens[5]));
+			movie.setId(
+					((tokens[5].length()>0)?Integer.parseInt(tokens[5]):0));
 			movie.setImdbId(tokens[6]);
 			movie.setOriginalLanguage(tokens[7]);
 			movie.setOriginalTitle(tokens[8]);
 			movie.setOverview(tokens[9]);
-			movie.setPopularity(Double.parseDouble(tokens[10]));
+			movie.setPopularity(
+					((tokens[10].length()>0)?Double.parseDouble(tokens[10]):0.0));
 			movie.setPosterPath(tokens[11]);
 			movie.setProductionCompanies(tokens[12]);
 			movie.setProductionCountries(tokens[13]);
 			movie.setReleaseDate(tokens[14]);
-			movie.setRevenue(Long.parseLong(tokens[15]));
-			movie.setRuntime(Double.parseDouble(tokens[16]));
+			movie.setRevenue(
+					((tokens[15].length()>0)?Long.parseLong(tokens[15]):0L));
+			movie.setRuntime(
+					((tokens[16].length()>0)?Double.parseDouble(tokens[16]):0.0));
 			movie.setSpokenLanguages(tokens[17]);
 			movie.setStatus(tokens[18]);
 			movie.setTagline(tokens[19]);
 			movie.setTitle(tokens[20]);
-			movie.setVideo(Boolean.parseBoolean(tokens[21]));
-			movie.setVoteAverage(Double.parseDouble(tokens[22]));
-			movie.setVoteCount(Long.parseLong(tokens[23]));
+			movie.setVideo(
+					((tokens[21].length()>0)?Boolean.parseBoolean(tokens[21]):Boolean.FALSE));
+			movie.setVoteAverage(
+					((tokens[22].length()>0)?Double.parseDouble(tokens[22]):0.0));
+			movie.setVoteCount(
+					((tokens[23].length()>0)?Long.parseLong(tokens[23]):0L));
 		}catch(Exception e) {
 			System.err.println("Exception in processing: \n" +
 					input);
 			e.printStackTrace();
+			System.err.println("Token List:\n" + tokensList);
 			movie.setId(-1);
 		}
 
