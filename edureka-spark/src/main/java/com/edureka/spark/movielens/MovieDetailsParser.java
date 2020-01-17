@@ -85,6 +85,8 @@ public class MovieDetailsParser implements Serializable {
 		for(String x : tokensIter ) {
 			tokensList.add(x);
 		}
+		
+		String[] tokens = new String[tokensList.size()];
 
 		
 		MovieDetails movie = new MovieDetails();
@@ -93,7 +95,7 @@ public class MovieDetailsParser implements Serializable {
 		try {
 
 			//String[] tokens = tokensList.toArray(new String[0]);
-			String[] tokens = new String[tokensList.size()];
+			
 			for(int i=0;i<tokensList.size();i++) {
 				tokens[i]=tokensList.get(i);
 			}
@@ -142,6 +144,10 @@ public class MovieDetailsParser implements Serializable {
 					input);
 			e.printStackTrace();
 			System.err.println("Token List:\n" + tokensList);
+			for(int i=0;i<tokens.length;i++) {
+				System.err.printf("index:%d\ttoken_val:%s\n",
+						i, tokens[i]);
+			}
 			movie.setId(-1);
 		}
 

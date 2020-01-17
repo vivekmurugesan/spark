@@ -57,8 +57,8 @@ public class MoviesDataProcessor implements Serializable {
 	
 	public void computeStats(JavaSparkContext sc) {
 		
-		JavaPairRDD<Integer, Double> ratingsRdd = processRatings(sc);
-		JavaPairRDD<Integer, MovieDetails> movieDetailsRdd = processMovieDetails(sc);
+		JavaPairRDD<Integer, Double> ratingsRdd = processRatings(sc).cache();
+		JavaPairRDD<Integer, MovieDetails> movieDetailsRdd = processMovieDetails(sc).cache();
 		
 		computeRatingCountTopN(sc, ratingsRdd, movieDetailsRdd);
 		computeRatingMeanTopN(sc, ratingsRdd, movieDetailsRdd);
@@ -69,7 +69,9 @@ public class MoviesDataProcessor implements Serializable {
 		
 		JavaPairRDD<Integer, Integer> ratingCountRdd = 
 				ratingsRdd.mapToPair(x -> new Tuple2<>(x._1, 1))
-				.reduceByKey((x,y) -> x+y);
+				.reduceByKey((x,y) -> x+y).cache();
+		
+		System.err.println(".. number of movies in ratings :" + ratingCountRdd.count());
 		
 		/*
 		 * JavaPairRDD<Integer, Integer> ratingCountReversed =
