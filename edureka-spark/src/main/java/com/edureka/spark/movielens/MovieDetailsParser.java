@@ -143,10 +143,12 @@ public class MovieDetailsParser implements Serializable {
 			System.err.println("Exception in processing: \n" +
 					input);
 			e.printStackTrace();
-			System.err.println("Token List:\n" + tokensList);
+			//System.err.println("Token List:\n" + tokensList);
 			for(int i=0;i<tokens.length;i++) {
 				System.err.printf("index:%d\ttoken_val:%s\n",
 						i, tokens[i]);
+				System.err.printf("From list: index:%d\ttoken_val:%s\n",
+						i, tokensList.get(i));
 			}
 			movie.setId(-1);
 		}
