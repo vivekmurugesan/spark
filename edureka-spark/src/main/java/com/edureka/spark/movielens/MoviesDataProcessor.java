@@ -9,6 +9,7 @@ import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.api.java.Optional;
 
 import com.edureka.spark.data.model.movielens.MovieDetails;
 
@@ -60,6 +61,7 @@ public class MoviesDataProcessor implements Serializable {
 		JavaPairRDD<Integer, MovieDetails> movieDetailsRdd = processMovieDetails(sc);
 		
 		computeRatingCountTopN(sc, ratingsRdd, movieDetailsRdd);
+		computeRatingMeanTopN(sc, ratingsRdd, movieDetailsRdd);
 	}
 	
 	public void computeRatingCountTopN(JavaSparkContext sc, JavaPairRDD<Integer, Double> ratingsRdd,
@@ -86,9 +88,9 @@ public class MoviesDataProcessor implements Serializable {
 		
 		
 		
-		JavaPairRDD<Integer, Tuple2<Integer, MovieDetails>> joined = ratingCountRdd.join(movieDetailsRdd);
+		JavaPairRDD<Integer, Tuple2<Integer, Optional<MovieDetails>>> joined = ratingCountRdd.leftOuterJoin(movieDetailsRdd);
 		
-		List<Tuple2<Integer, Tuple2<Integer, MovieDetails>>> ratingCountTopNList =
+		List<Tuple2<Integer, Tuple2<Integer, Optional<MovieDetails>>>> ratingCountTopNList =
 			joined.top(topN, new SerializableTupleComparator2());
 		
 		List<String> toPrint = new ArrayList<>();
@@ -97,14 +99,24 @@ public class MoviesDataProcessor implements Serializable {
 				{
 					int movieId = x._1;
 					int ratingCount = x._2._1;
-					MovieDetails movie = x._2._2;
-					toPrint.add(movieId+","+
-							ratingCount+","+
-							movie.getTitle()+","+
-							movie.getBudget()+","+
-							movie.getRevenue()+","+
-							movie.getVoteCount()+","+
-							movie.getVoteAverage()+",");
+					if(!x._2._2.isPresent()) {
+						toPrint.add(movieId+","+
+								ratingCount+","+
+								"NA,"+
+								"NA,"+
+								"NA,"+
+								"NA,"+
+								"NA");
+					}else {
+						MovieDetails movie = x._2._2.get();
+						toPrint.add(movieId+","+
+								ratingCount+","+
+								movie.getTitle()+","+
+								movie.getBudget()+","+
+								movie.getRevenue()+","+
+								movie.getVoteCount()+","+
+								movie.getVoteAverage());
+					}
 				});
 		
 		JavaRDD<String> toPrintRdd = sc.parallelize(toPrint);
@@ -125,9 +137,9 @@ public class MoviesDataProcessor implements Serializable {
 		JavaPairRDD<Integer, Double> ratingMeanRdd = 
 				ratingSumRdd.join(ratingCountRdd).mapToPair(x -> new Tuple2<>(x._1, (x._2._1/ (x._2._2*1.0))));
 		
-		JavaPairRDD<Integer, Tuple2<Double, MovieDetails>> joined = ratingMeanRdd.join(movieDetailsRdd);
+		JavaPairRDD<Integer, Tuple2<Double, Optional<MovieDetails>>> joined = ratingMeanRdd.leftOuterJoin(movieDetailsRdd);
 		
-		List<Tuple2<Integer, Tuple2<Double, MovieDetails>>> ratingCountTopNList =
+		List<Tuple2<Integer, Tuple2<Double, Optional<MovieDetails>>>> ratingCountTopNList =
 			joined.top(topN, new SerializableTupleComparator3());
 		
 		List<String> toPrint = new ArrayList<>();
@@ -136,14 +148,24 @@ public class MoviesDataProcessor implements Serializable {
 				{
 					int movieId = x._1;
 					double meanRating = x._2._1;
-					MovieDetails movie = x._2._2;
-					toPrint.add(movieId+","+
-							meanRating+","+
-							movie.getTitle()+","+
-							movie.getBudget()+","+
-							movie.getRevenue()+","+
-							movie.getVoteCount()+","+
-							movie.getVoteAverage()+",");
+					if(!x._2._2.isPresent()) {
+						toPrint.add(movieId+","+
+								meanRating+","+
+								"NA,"+
+								"NA,"+
+								"NA,"+
+								"NA,"+
+								"NA");
+					}else {
+						MovieDetails movie = x._2._2.get();
+						toPrint.add(movieId+","+
+								meanRating+","+
+								movie.getTitle()+","+
+								movie.getBudget()+","+
+								movie.getRevenue()+","+
+								movie.getVoteCount()+","+
+								movie.getVoteAverage());
+					}
 				});
 		
 		JavaRDD<String> toPrintRdd = sc.parallelize(toPrint);
@@ -206,7 +228,7 @@ public class MoviesDataProcessor implements Serializable {
 		
 	}
 	
-	static class SerializableTupleComparator2 implements Serializable,Comparator<Tuple2<Integer, Tuple2<Integer, MovieDetails>>>{
+	static class SerializableTupleComparator2 implements Serializable,Comparator<Tuple2<Integer, Tuple2<Integer, Optional<MovieDetails>>>>{
 
 		/**
 		 * 
@@ -214,14 +236,14 @@ public class MoviesDataProcessor implements Serializable {
 		private static final long serialVersionUID = 1L;
 
 		@Override
-		public int compare(Tuple2<Integer, Tuple2<Integer, MovieDetails>> o1,
-				Tuple2<Integer, Tuple2<Integer, MovieDetails>> o2) {
+		public int compare(Tuple2<Integer, Tuple2<Integer, Optional<MovieDetails>>> o1,
+				Tuple2<Integer, Tuple2<Integer, Optional<MovieDetails>>> o2) {
 			return o2._2._1.compareTo(o1._2._1);
 		}
 		
 	}
 	
-	static class SerializableTupleComparator3 implements Serializable,Comparator<Tuple2<Integer, Tuple2<Double, MovieDetails>>>{
+	static class SerializableTupleComparator3 implements Serializable,Comparator<Tuple2<Integer, Tuple2<Double, Optional<MovieDetails>>>>{
 
 		/**
 		 * 
@@ -229,8 +251,8 @@ public class MoviesDataProcessor implements Serializable {
 		private static final long serialVersionUID = 1L;
 
 		@Override
-		public int compare(Tuple2<Integer, Tuple2<Double, MovieDetails>> o1,
-				Tuple2<Integer, Tuple2<Double, MovieDetails>> o2) {
+		public int compare(Tuple2<Integer, Tuple2<Double, Optional<MovieDetails>>> o1,
+				Tuple2<Integer, Tuple2<Double, Optional<MovieDetails>>> o2) {
 			return o2._2._1.compareTo(o1._2._1);
 		}
 		

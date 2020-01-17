@@ -92,7 +92,11 @@ public class MovieDetailsParser implements Serializable {
 		
 		try {
 
-			String[] tokens = tokensList.toArray(new String[0]);
+			//String[] tokens = tokensList.toArray(new String[0]);
+			String[] tokens = new String[tokensList.size()];
+			for(int i=0;i<tokensList.size();i++) {
+				tokens[i]=tokensList.get(i);
+			}
 
 			for(int i=0;i<tokens.length;i++) {
 				System.out.printf("Token: %d before unqote: %s \n",i, tokens[i]);
