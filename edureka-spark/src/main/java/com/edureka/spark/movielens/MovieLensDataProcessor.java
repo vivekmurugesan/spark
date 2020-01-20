@@ -25,8 +25,8 @@ public class MovieLensDataProcessor {
 	private String inputPath = "/mnt/bigdatapgp/edureka_549997/datasets/movie_lens/ml-10M100K";
 	private String outputPath = "output";
 	
-	private String ratingsFileName = "ratings.csv";
-	private String movieDetailsFileName = "movies.csv";
+	private String ratingsFileName = "ratings.dat";
+	private String movieDetailsFileName = "movies.dat";
 	
 	private String delim = "::";
 	
