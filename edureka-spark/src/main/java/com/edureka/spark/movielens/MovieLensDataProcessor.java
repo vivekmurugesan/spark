@@ -20,8 +20,13 @@ import scala.Tuple2;
  * @author vivek
  *
  */
-public class MovieLensDataProcessor {
+public class MovieLensDataProcessor implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
 	private String inputPath = "/mnt/bigdatapgp/edureka_549997/datasets/movie_lens/ml-10M100K";
 	private String outputPath = "output";
 	
