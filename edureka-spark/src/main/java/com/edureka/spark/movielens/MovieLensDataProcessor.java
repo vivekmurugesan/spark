@@ -22,13 +22,13 @@ import scala.Tuple2;
  */
 public class MovieLensDataProcessor {
 
-	private String inputPath = "/mnt/bigdatapgp/edureka_549997/datasets/movie_lens/ml-20m";
+	private String inputPath = "/mnt/bigdatapgp/edureka_549997/datasets/movie_lens/ml-10M100K";
 	private String outputPath = "output";
 	
 	private String ratingsFileName = "ratings.csv";
 	private String movieDetailsFileName = "movies.csv";
 	
-	private String delim = ",";
+	private String delim = "::";
 	
 	private int topN = 10;
 	
@@ -38,15 +38,19 @@ public class MovieLensDataProcessor {
 		
 		JavaSparkContext sc = new JavaSparkContext(conf);
 		
-		MovieLensDataProcessor processor = new MovieLensDataProcessor(args[0], args[1]);
+		int top_n = 20;
+		if(args.length >= 2)
+			top_n = Integer.parseInt(args[2]);
+		MovieLensDataProcessor processor = new MovieLensDataProcessor(args[0], args[1], top_n);
 		
 		processor.processMovieLensData(sc);
 		
 	}
 
-	public MovieLensDataProcessor(String inputPath, String outputPath) {
+	public MovieLensDataProcessor(String inputPath, String outputPath, int top_n) {
 		this.inputPath = inputPath;
 		this.outputPath = outputPath;
+		this.topN = top_n;
 	}
 	
 	public JavaPairRDD<Integer, Movie> loadMoviesData(JavaSparkContext sc){
@@ -55,7 +59,7 @@ public class MovieLensDataProcessor {
 		moviesFile = moviesFile.filter(x -> !x.startsWith("movieId"));
 		JavaPairRDD<Integer, Movie> moviesRdd = 
 				moviesFile.mapToPair(x -> {
-					String[] tokens = x.split(",");
+					String[] tokens = x.split(delim);
 					int movieId = Integer.parseInt(tokens[0]);
 					Movie movie = new Movie(movieId, tokens[1]);
 					String[] genres = tokens[2].split("\\|");
@@ -77,7 +81,7 @@ public class MovieLensDataProcessor {
 		// <MovieId, <UserId, Rating>>
 		JavaPairRDD<Integer, Tuple2<Integer, Double>> ratingsRdd = 
 				ratingsFile.mapToPair(x -> {
-					String[] tokens = x.split(",");
+					String[] tokens = x.split(delim);
 					int userId = Integer.parseInt(tokens[0]);
 					int movieId = Integer.parseInt(tokens[1]);
 					double rating = Double.parseDouble(tokens[2]);
@@ -133,7 +137,7 @@ public class MovieLensDataProcessor {
 				ratingsRdd.mapToPair(x -> new Tuple2<>(x._1,1)).reduceByKey((x,y) -> x+y);
 		joinWithMoviesAndPrint(sc, moviesRatingCount, moviesRdd, "RatingCount");
 
-		moviesRatingCount.saveAsTextFile(outputPath +"/RatingCount");
+		moviesRatingCount.map(x -> x._1 +"," + x._2).saveAsTextFile(outputPath +"/RatingCount");
 		
 		return moviesRatingCount;
 	}
@@ -222,7 +226,8 @@ public class MovieLensDataProcessor {
 		JavaRDD<Tuple2<Integer, Tuple2<Integer, Movie>>> top20MoviesRdd = 
 				sc.parallelize(top20Movies);
 		
-		top20MoviesRdd.map(x -> x._1 +"," + x._2._1 + "," + x._2._2).saveAsTextFile(outputPath+"/Top20-"+type);;
+		top20MoviesRdd.map(x -> x._1 +"," + x._2._1 + "," + x._2._2.getTitle())
+			.saveAsTextFile(outputPath+"/Top20-"+type);;
 		
 	}
 	
@@ -233,7 +238,8 @@ public class MovieLensDataProcessor {
 		JavaRDD<Tuple2<Integer, Tuple2<Double, Movie>>> top20MoviesRdd = 
 				sc.parallelize(top20Movies);
 		
-		top20MoviesRdd.map(x -> x._1 +"," + x._2._1 + "," + x._2._2).saveAsTextFile(outputPath+"/Top20-"+type);;
+		top20MoviesRdd.map(x -> x._1 +"," + x._2._1 + "," + x._2._2.getTitle())
+			.saveAsTextFile(outputPath+"/Top20-"+type);;
 
 	}
 	
