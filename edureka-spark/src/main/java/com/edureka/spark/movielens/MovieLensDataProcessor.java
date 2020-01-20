@@ -52,6 +52,7 @@ public class MovieLensDataProcessor {
 	public JavaPairRDD<Integer, Movie> loadMoviesData(JavaSparkContext sc){
 		// Loading Movies data --> movie_id::title::tag1|tag2...
 		JavaRDD<String> moviesFile = sc.textFile(inputPath+"/"+movieDetailsFileName).cache();
+		moviesFile = moviesFile.filter(x -> !x.startsWith("movieId"));
 		JavaPairRDD<Integer, Movie> moviesRdd = 
 				moviesFile.mapToPair(x -> {
 					String[] tokens = x.split(",");
@@ -72,6 +73,7 @@ public class MovieLensDataProcessor {
 	public JavaPairRDD<Integer, Tuple2<Integer, Double>> loadRatingsData(JavaSparkContext sc){
 		// Loading ratings data --> UserID::MovieID::Rating::Timestamp
 		JavaRDD<String> ratingsFile = sc.textFile(inputPath+"/"+ratingsFileName).cache();
+		ratingsFile = ratingsFile.filter(x -> !x.startsWith("userId"));
 		// <MovieId, <UserId, Rating>>
 		JavaPairRDD<Integer, Tuple2<Integer, Double>> ratingsRdd = 
 				ratingsFile.mapToPair(x -> {
