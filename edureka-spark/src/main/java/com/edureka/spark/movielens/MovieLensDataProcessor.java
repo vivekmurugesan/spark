@@ -84,6 +84,13 @@ public class MovieLensDataProcessor {
 		return ratingsRdd;
 	}
 	
+	/**
+	 * Answer to Question 1:
+	 * To compute the genre wise movie count and print.
+	 * Output will be saved under the specified directory in the code.
+	 * @param sc
+	 * @param moviesRdd
+	 */
 	public void computeGenreWiseMovieCount(JavaSparkContext sc, 
 			JavaPairRDD<Integer, Movie> moviesRdd) {
 		// Genre Summary on movies..
@@ -103,6 +110,17 @@ public class MovieLensDataProcessor {
 		sc.parallelize(toPrint).saveAsTextFile(outputPath +"/GenreMovieCount");
 	}
 	
+	/**
+	 * Answer to Question 2 and 3:
+	 * 2. To compute the rating count for each movie and save the same.
+	 * 3. To compute the top n movies based on rating count and print.
+	 * Generated output will be saved under the specified directory in the code.
+	 * @param sc
+	 * @param topN
+	 * @param ratingsRdd
+	 * @param moviesRdd
+	 * @return
+	 */
 	public JavaPairRDD<Integer, Integer> computeTopNWithRatingCount(JavaSparkContext sc, int topN,
 			JavaPairRDD<Integer, Tuple2<Integer, Double>> ratingsRdd,
 			JavaPairRDD<Integer, Movie> moviesRdd) {
@@ -116,6 +134,16 @@ public class MovieLensDataProcessor {
 		return moviesRatingCount;
 	}
 	
+	/**
+	 * Answer to Question 3:
+	 * To compute the top n movies based on the cumulative rating values.
+	 * Generated output will be saved under the specified directory in the code.
+	 * @param sc
+	 * @param topN
+	 * @param ratingsRdd
+	 * @param moviesRdd
+	 * @return
+	 */
 	public JavaPairRDD<Integer, Double> computeTopNWithCumulativeRating(JavaSparkContext sc, int topN,
 			JavaPairRDD<Integer, Tuple2<Integer, Double>> ratingsRdd,
 			JavaPairRDD<Integer, Movie> moviesRdd) {
@@ -126,6 +154,18 @@ public class MovieLensDataProcessor {
 		return ratingSumRdd;
 	}
 	
+	/**
+	 * Answer to Question 4:
+	 * To compute the top n movies based on the average rating values.
+	 * Generated output will be saved under the specified directory in the code.
+	 * @param sc
+	 * @param topN
+	 * @param ratingsRdd
+	 * @param moviesRdd
+	 * @param ratingCountRdd
+	 * @param ratingSumRdd
+	 * @return
+	 */
 	public JavaPairRDD<Integer, Tuple2<Double, Integer>> computeTopNWithMeanRating(JavaSparkContext sc, int topN,
 			JavaPairRDD<Integer, Tuple2<Integer, Double>> ratingsRdd,
 			JavaPairRDD<Integer, Movie> moviesRdd,
@@ -156,6 +196,12 @@ public class MovieLensDataProcessor {
 				computeTopNWithMeanRating(sc, topN, ratingsRdd, 
 						moviesRdd, ratingCountRdd, ratingSumRdd);
 		
+		
+		/**
+		 * Answer to Question 5:
+		 * To compute the top n movies based on the mean rating, which also 
+		 * has at least 10K ratings.
+		 */
 		// Filtering for only popular movies with at least 10K ratings..
 		joinWithMoviesAndPrint1(sc, ratingAvgRdd.filter(x -> x._2._2 >= 10000).mapToPair(x -> new Tuple2<>(x._1, x._2._1)), moviesRdd, "AvgRating_AtLeast10K");
 		
