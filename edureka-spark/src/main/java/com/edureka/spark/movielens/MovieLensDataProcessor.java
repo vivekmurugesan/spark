@@ -54,7 +54,7 @@ public class MovieLensDataProcessor {
 		JavaRDD<String> moviesFile = sc.textFile(inputPath+"/"+movieDetailsFileName).cache();
 		JavaPairRDD<Integer, Movie> moviesRdd = 
 				moviesFile.mapToPair(x -> {
-					String[] tokens = x.split("::");
+					String[] tokens = x.split(",");
 					int movieId = Integer.parseInt(tokens[0]);
 					Movie movie = new Movie(movieId, tokens[1]);
 					String[] genres = tokens[2].split("\\|");
@@ -75,7 +75,7 @@ public class MovieLensDataProcessor {
 		// <MovieId, <UserId, Rating>>
 		JavaPairRDD<Integer, Tuple2<Integer, Double>> ratingsRdd = 
 				ratingsFile.mapToPair(x -> {
-					String[] tokens = x.split("::");
+					String[] tokens = x.split(",");
 					int userId = Integer.parseInt(tokens[0]);
 					int movieId = Integer.parseInt(tokens[1]);
 					double rating = Double.parseDouble(tokens[2]);
