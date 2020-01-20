@@ -39,7 +39,7 @@ public class MovieLensDataProcessor {
 		JavaSparkContext sc = new JavaSparkContext(conf);
 		
 		int top_n = 20;
-		if(args.length >= 2)
+		if(args.length >= 3)
 			top_n = Integer.parseInt(args[2]);
 		MovieLensDataProcessor processor = new MovieLensDataProcessor(args[0], args[1], top_n);
 		
