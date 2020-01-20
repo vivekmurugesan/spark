@@ -191,6 +191,8 @@ public class MovieLensDataProcessor {
 		JavaPairRDD<Integer, Movie> moviesRdd = loadMoviesData(sc);
 		JavaPairRDD<Integer, Tuple2<Integer, Double>> ratingsRdd = loadRatingsData(sc);
 		
+		computeGenreWiseMovieCount(sc, moviesRdd);
+		
 		JavaPairRDD<Integer, Integer> ratingCountRdd = computeTopNWithRatingCount(sc, 
 				topN, ratingsRdd, moviesRdd);
 		JavaPairRDD<Integer, Double> ratingSumRdd = computeTopNWithCumulativeRating(sc, 
