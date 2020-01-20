@@ -40,6 +40,8 @@ public class MovieLensDataProcessor {
 		
 		MovieLensDataProcessor processor = new MovieLensDataProcessor(args[0], args[1]);
 		
+		processor.processMovieLensData(sc);
+		
 	}
 
 	public MovieLensDataProcessor(String inputPath, String outputPath) {
