@@ -14,3 +14,8 @@ spark-submit --master local[16] --executor-memory 16g --driver-memory 4g --class
 
 spark-submit --master local[16] --class com.edureka.spark.movielens.MoviesDataProcessor target/edureka-spark-0.0.1-SNAPSHOT-jar-with-dependencies.jar /mnt/bigd
 atapgp/edureka_549997/datasets/movie_dataset/ movies_output > out.txt 2>err.txt &
+
+3. Movie Lens Data Processing
+
+spark-submit --master local[16] --class com.edureka.spark.movielens.MovieLensDataProcessor target/edureka-spark-0.0.1-SNAPSHOT-jar-with-dependencies.jar /mnt/bigd
+atapgp/edureka_549997/datasets/movie_dataset/ movies_output > out.txt 2>err.txt &
