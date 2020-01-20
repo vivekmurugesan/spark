@@ -18,4 +18,4 @@ atapgp/edureka_549997/datasets/movie_dataset/ movies_output > out.txt 2>err.txt 
 3. Movie Lens Data Processing
 
 spark-submit --master local[16] --class com.edureka.spark.movielens.MovieLensDataProcessor target/edureka-spark-0.0.1-SNAPSHOT-jar-with-dependencies.jar /mnt/bigd
-atapgp/edureka_549997/datasets/movie_dataset/ movies_output > out.txt 2>err.txt &
+atapgp/edureka_549997/datasets/movie_lens/ml-20m/ movies_output > out.txt 2>err.txt &
