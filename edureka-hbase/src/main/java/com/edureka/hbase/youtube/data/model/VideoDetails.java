@@ -22,10 +22,10 @@ public class VideoDetails {
 	/**
 	 * Stats -- likes, dislikes, comments_count
 	 */
-	private long viewCount;
-	private long likeCount;
-	private long dislikeCount;
-	private long commentCount;
+	private String viewCount;
+	private String likeCount;
+	private String dislikeCount;
+	private String commentCount;
 	
 	/**
 	 * Flags.
@@ -74,28 +74,28 @@ public class VideoDetails {
 	public void setPublishTime(String publishTime) {
 		this.publishTime = publishTime;
 	}
-	public long getViewCount() {
+	public String getViewCount() {
 		return viewCount;
 	}
-	public void setViewCount(long viewCount) {
+	public void setViewCount(String viewCount) {
 		this.viewCount = viewCount;
 	}
-	public long getLikeCount() {
+	public String getLikeCount() {
 		return likeCount;
 	}
-	public void setLikeCount(long likeCount) {
+	public void setLikeCount(String likeCount) {
 		this.likeCount = likeCount;
 	}
-	public long getDislikeCount() {
+	public String getDislikeCount() {
 		return dislikeCount;
 	}
-	public void setDislikeCount(long dislikeCount) {
+	public void setDislikeCount(String dislikeCount) {
 		this.dislikeCount = dislikeCount;
 	}
-	public long getCommentCount() {
+	public String getCommentCount() {
 		return commentCount;
 	}
-	public void setCommentCount(long commentCount) {
+	public void setCommentCount(String commentCount) {
 		this.commentCount = commentCount;
 	}
 	public String getCommentsDisabled() {

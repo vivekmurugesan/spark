@@ -120,10 +120,10 @@ public class CsvFileParser {
 			videoDetails.setCategoryId(record.get(headerMap.get(CatIdCol)));
 			videoDetails.setPublishTime(record.get(headerMap.get(PublishTimeCol)));
 			
-			videoDetails.setViewCount(Long.parseLong(record.get(headerMap.get(ViewCountCol))));
-			videoDetails.setLikeCount(Long.parseLong(record.get(headerMap.get(LikeCountCol))));
-			videoDetails.setDislikeCount(Long.parseLong(record.get(headerMap.get(DislikeCountCol))));
-			videoDetails.setCommentCount(Long.parseLong(record.get(headerMap.get(CommentCountCol))));
+			videoDetails.setViewCount(record.get(headerMap.get(ViewCountCol)));
+			videoDetails.setLikeCount(record.get(headerMap.get(LikeCountCol)));
+			videoDetails.setDislikeCount(record.get(headerMap.get(DislikeCountCol)));
+			videoDetails.setCommentCount(record.get(headerMap.get(CommentCountCol)));
 			
 			videoDetails.setCommentsDisabled(record.get(headerMap.get(CommentsDisabledCol)));
 			videoDetails.setRatingsDisabled(record.get(headerMap.get(RatingsDisabledCol)));
