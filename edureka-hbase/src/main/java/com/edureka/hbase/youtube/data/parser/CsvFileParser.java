@@ -106,36 +106,42 @@ public class CsvFileParser {
 		
 		int i = 0;
 		for(CSVRecord record : csvRecords) {
-			System.out.printf(".. Processing Record....:%d",i++);
+			System.out.printf(".. Processing Record....:%d",i);
 			
-			VideoDetails videoDetails = new VideoDetails();
-			
-			videoDetails.setVideoId(record.get(headerMap.get(VideoIdCol)));
-			
-			videoDetails.setRegionId(regionName);
-			
-			videoDetails.setTitle(record.get(headerMap.get(TitleCol)));
-			videoDetails.setChannelTitle(record.get(headerMap.get(ChannelTitleCol)));
-			videoDetails.setTrendingDate(record.get(headerMap.get(TrendingDateCol)));
-			videoDetails.setCategoryId(record.get(headerMap.get(CatIdCol)));
-			videoDetails.setPublishTime(record.get(headerMap.get(PublishTimeCol)));
-			
-			videoDetails.setViewCount(record.get(headerMap.get(ViewCountCol)));
-			videoDetails.setLikeCount(record.get(headerMap.get(LikeCountCol)));
-			videoDetails.setDislikeCount(record.get(headerMap.get(DislikeCountCol)));
-			videoDetails.setCommentCount(record.get(headerMap.get(CommentCountCol)));
-			
-			videoDetails.setCommentsDisabled(record.get(headerMap.get(CommentsDisabledCol)));
-			videoDetails.setRatingsDisabled(record.get(headerMap.get(RatingsDisabledCol)));
-			videoDetails.setVideoErrOrRemoved(record.get(headerMap.get(VideoErrOrRemovedCol)));
-			
-			hbaseInserter.insertData(videoDetails, htable);
-			
-			/*
-			 * for(Iterator<String> iter = record.iterator();iter.hasNext();) { String val =
-			 * iter.next(); System.out.println("Col:" + val); }
-			 */
-			System.out.println("........End...........");
+			try {
+				VideoDetails videoDetails = new VideoDetails();
+
+				videoDetails.setVideoId(record.get(headerMap.get(VideoIdCol)));
+
+				videoDetails.setRegionId(regionName);
+
+				videoDetails.setTitle(record.get(headerMap.get(TitleCol)));
+				videoDetails.setChannelTitle(record.get(headerMap.get(ChannelTitleCol)));
+				videoDetails.setTrendingDate(record.get(headerMap.get(TrendingDateCol)));
+				videoDetails.setCategoryId(record.get(headerMap.get(CatIdCol)));
+				videoDetails.setPublishTime(record.get(headerMap.get(PublishTimeCol)));
+
+				videoDetails.setViewCount(record.get(headerMap.get(ViewCountCol)));
+				videoDetails.setLikeCount(record.get(headerMap.get(LikeCountCol)));
+				videoDetails.setDislikeCount(record.get(headerMap.get(DislikeCountCol)));
+				videoDetails.setCommentCount(record.get(headerMap.get(CommentCountCol)));
+
+				videoDetails.setCommentsDisabled(record.get(headerMap.get(CommentsDisabledCol)));
+				videoDetails.setRatingsDisabled(record.get(headerMap.get(RatingsDisabledCol)));
+				videoDetails.setVideoErrOrRemoved(record.get(headerMap.get(VideoErrOrRemovedCol)));
+
+				hbaseInserter.insertData(videoDetails, htable);
+
+				/*
+				 * for(Iterator<String> iter = record.iterator();iter.hasNext();) { String val =
+				 * iter.next(); System.out.println("Col:" + val); }
+				 */
+			}catch(Exception e) {
+				System.out.println(".. Exception in processing record:" + i);
+				e.printStackTrace();
+			}
+			System.out.printf("........End of processing record : %d...........\n", i);
+			i++;
 		}
 		
 		
