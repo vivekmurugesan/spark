@@ -75,7 +75,9 @@ public class CsvFileParser {
 			fileName = fileName + csvFileName;
 			regionName = csvFileName.substring(0, 2);
 			try {
+				System.out.println(".. Processing file: " + fileName);
 				parseAndProcessFile(fileName, regionName);
+				System.out.println(".. Processing complete for file: " + fileName);
 			} catch (IOException e) {
 				System.out.println(".. Not able to process file: " + fileName);
 				e.printStackTrace();
