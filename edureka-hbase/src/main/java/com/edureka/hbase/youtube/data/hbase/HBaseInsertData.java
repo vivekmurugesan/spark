@@ -20,7 +20,7 @@ public class HBaseInsertData {
 	public HBaseInsertData() {
 	}
 	
-	private String videoStatTable = "Video_Stats";
+	private String videoStatTable = "Youtube_Video_Stats";
 	
 	private String metaDataCF = "meta_data";
 	private String statsCF = "stats";
