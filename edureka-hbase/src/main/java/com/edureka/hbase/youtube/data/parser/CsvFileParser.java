@@ -48,7 +48,7 @@ public class CsvFileParser {
 	private static final String VideoErrOrRemovedCol = "video_error_or_removed";
 	
 	private static final String[] csvFiles = {
-			"CAvideos.csv",  "DEvideos.csv",  "FRvideos.csv",  "GBvideos.csv",  "INvideos.csv",  
+			/*"CAvideos.csv", */  "DEvideos.csv",  "FRvideos.csv",  "GBvideos.csv",  "INvideos.csv",  
 			"JPvideos.csv",  "KRvideos.csv",  "MXvideos.csv",  "RUvideos.csv",  "USvideos.csv"
 	};
 	
@@ -68,10 +68,10 @@ public class CsvFileParser {
 	}
 	
 	public void processAllFiles() {
-		String fileName = this.directory + "/";
 		String regionName;
 		
 		for(String csvFileName : csvFiles) {
+			String fileName = this.directory + "/";
 			fileName = fileName + csvFileName;
 			regionName = csvFileName.substring(0, 2);
 			try {
