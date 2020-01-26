@@ -14,6 +14,7 @@ import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.Statement;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
+import com.edureka.cassandra.csv.USAccidentDetails;
 import com.edureka.cassandra.csv.VideoDetails;
 import com.datastax.driver.core.Cluster.Builder;
 
@@ -107,6 +108,84 @@ public class CassandraClient {
 				+ "video_id text PRIMARY KEY," + "comments_disabled text," + "rating_disabled text,"
 				+ "video_err_removed text" + ");");
 		
+	}
+	
+	public void createUSAccidentsDataSchema() {
+		session.execute("CREATE KEYSPACE IF NOT EXISTS US_Accidents_Stats WITH replication "
+				+ "= {'class':'SimpleStrategy', 'replication_factor':3};");
+		
+		session.execute("CREATE TABLE IF NOT EXISTS US_Accidents_Stats.Time_Location ("
+				+ "id text PRIMARY KEY," + "start_time text," + "end_time text," + "start_lat text,"
+				+ "start_lng text," + "end_lat text," + "end_lng text" + ");");
+		
+		session.execute("CREATE TABLE IF NOT EXISTS US_Accidents_Stats.Address_Details ("
+				+ "id text PRIMARY KEY," + "number text," + "street text,"
+				+ "side text," + "city text," 
+				+ "county text," + "state text,"
+				+ "zip text," + "country text" + ");");
+		
+		session.execute("CREATE TABLE IF NOT EXISTS US_Accidents_Stats.Weather_Details ("
+				+ "id text PRIMARY KEY," + "weather_timestamp text," + "temparature text,"
+				+ "windchill text," + "humidity text," 
+				+ "pressure text," + "visibility text,"
+				+ "wind_direction text," + "wind_speed text,"+ "precipitation text,"
+				+ "weather_condition text" + ");");
+		
+		
+	}
+	
+	public void insertDataFrom(USAccidentDetails details) {
+
+		// Time_Location
+		PreparedStatement statement = session
+				.prepare("INSERT INTO US_Accidents_Stats.Time_Location "
+						+ "(id, start_time, end_time, start_lat, start_lng, end_lat, end_lng) "
+						+ "VALUES (?, ?, ?, ?, ?, ?, ?);");
+
+		BoundStatement boundStatement = new BoundStatement(statement);
+
+		ResultSet res = session.execute(boundStatement.bind(
+				details.getId(),details.getStartTime(),
+				details.getEndTime(), details.getStartLat(),
+				details.getStartLng(), details.getEndLat(),
+				details.getEndLng()
+				));
+
+		System.err.println(res.toString());
+
+		// Time_Location
+		statement = session
+				.prepare("INSERT INTO US_Accidents_Stats.Address_Details "
+						+ "(id, number, street, side, city, county, state, zip, country) "
+						+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);");
+
+		boundStatement = new BoundStatement(statement);
+
+		res = session.execute(boundStatement.bind(
+				details.getId(),details.getNumber(),
+				details.getStreet(), details.getSide(),
+				details.getCity(), details.getCounty(),
+				details.getState(), details.getZip(), details.getCountry()
+				));
+
+		System.err.println(res.toString());
+
+		// Weather_Details
+		statement = session
+				.prepare("INSERT INTO US_Accidents_Stats.Weather_Details "
+						+ "(id, weather_timestamp, temparature, windchill, humidity, pressure, visibility, wind_direction, wind_speed, precipitation, weather_condition ) "
+						+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+
+		boundStatement = new BoundStatement(statement);
+
+		res = session.execute(boundStatement.bind(
+				details.getId(),details.getNumber(),
+				details.getStreet(), details.getSide(),
+				details.getCity(), details.getCounty(),
+				details.getState(), details.getZip(), details.getCountry()
+				));
+
+		System.err.println(res.toString());
 	}
 	
 	public void insertDataFrom(VideoDetails videoDetails) {
