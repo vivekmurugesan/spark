@@ -1,0 +1,608 @@
+1. Hdfs commands:
+ > hdfs dfs -mkdir /tmp/soccer-dataset
+ > hdfs dfs -put soccer/* /tmp/soccer-dataset/
+ 
+Creating and using database:
+
+CREATE DATABASE IF NOT EXISTS soccer;
+
+USE soccer;
+
+ 
+Creating Hive tables,
+1. Country table,
+
+CREATE TABLE IF NOT EXISTS soccer.countries_str (
+country_details_str String)
+STORED AS TEXTFILE
+tblproperties("skip.header.line.count"="1");
+
+
+LOAD DATA INPATH '/tmp/soccer-dataset/Country.csv'
+OVERWRITE INTO TABLE soccer.countries_str;
+
+
+2.Splitting the data and creating soccer.countries table,
+
+CREATE TABLE IF NOT EXISTS soccer.countries
+AS
+select cast(split(country_details_str, ",")[0] as int) as id,
+split(country_details_str, ",")[1] as name
+from
+soccer.countries_str
+
+3. League table,
+
+CREATE TABLE IF NOT EXISTS soccer.leagues_str (
+league_details_str String)
+STORED AS TEXTFILE
+tblproperties("skip.header.line.count"="1");
+
+
+LOAD DATA INPATH '/tmp/soccer-dataset/League.csv'
+OVERWRITE INTO TABLE soccer.leagues_str;
+
+
+4.Splitting the data and creating soccer.leagues table,
+
+CREATE TABLE IF NOT EXISTS soccer.leagues
+AS
+select cast(split(league_details_str, ",")[0] as int) as id,
+cast(split(league_details_str, ",")[1] as int) as country_id,
+split(league_details_str, ",")[2] as name
+from
+soccer.leagues_str
+
+5. Player table,
+
+CREATE TABLE IF NOT EXISTS soccer.payers_str (
+player_details_str String)
+STORED AS TEXTFILE
+tblproperties("skip.header.line.count"="1");
+
+
+LOAD DATA INPATH '/tmp/soccer-dataset/Player.csv'
+OVERWRITE INTO TABLE soccer.players_str;
+
+
+6.Splitting the data and creating soccer.players table,
+
+CREATE TABLE IF NOT EXISTS soccer.players
+AS
+select cast(split(player_details_str, ",")[0] as int) as id,
+cast(split(player_details_str, ",")[1] as int) as player_app_id,
+split(player_details_str, ",")[2] as player_name,
+cast(split(player_details_str, ",")[3] as int) as player_fifa_api_id,
+split(player_details_str, ",")[4] as birthday,
+cast(split(player_details_str, ",")[5] as float) as height,
+cast(split(player_details_str, ",")[6] as int) as weight
+from
+soccer.players_str
+
+select count(*) from soccer.players_str
+
+select count(*) from soccer.players
+
+select * from soccer.players limit 10
+
+
+7. Team table,
+
+CREATE TABLE IF NOT EXISTS soccer.teams_str (
+team_details_str String)
+STORED AS TEXTFILE
+tblproperties("skip.header.line.count"="1");
+
+
+LOAD DATA INPATH '/tmp/soccer-dataset/Team.csv'
+OVERWRITE INTO TABLE soccer.teams_str;
+
+
+8.Splitting the data and creating soccer.teams table,
+
+CREATE TABLE IF NOT EXISTS soccer.teams
+AS
+select cast(split(team_details_str, ",")[0] as int) as id,
+cast(split(team_details_str, ",")[1] as int) as team_app_id,
+cast(split(team_details_str, ",")[2] as int) as team_fifa_app_id,
+split(team_details_str, ",")[3] as team_long_name,
+split(team_details_str, ",")[4] as team_short_name
+from
+soccer.teams_str
+
+select count(*) from soccer.teams_str
+
+select count(*) from soccer.teams
+
+select * from soccer.teams limit 10
+
+7. Team Attributes table,
+
+CREATE TABLE IF NOT EXISTS soccer.team_attributes_str (
+team_attr_details_str String)
+STORED AS TEXTFILE
+tblproperties("skip.header.line.count"="1");
+
+
+LOAD DATA INPATH '/tmp/soccer-dataset/Team_Attributes.csv'
+OVERWRITE INTO TABLE soccer.team_attributes_str;
+
+
+8.Splitting the data and creating soccer.team_attributes table,
+
+CREATE TABLE IF NOT EXISTS soccer.team_attributes
+AS
+select cast(split(team_attr_details_str, ",")[0] as int) as id,
+cast(split(team_attr_details_str, ",")[1] as int) as team_fifa_api_id,
+cast(split(team_attr_details_str, ",")[2] as int) as team_api_id,
+split(team_attr_details_str, ",")[3] as team_date,
+cast(split(team_attr_details_str, ",")[4] as int) as buildUpPlaySpeed,
+split(team_attr_details_str, ",")[5] as buildUpPlaySpeedClass,
+cast(split(team_attr_details_str, ",")[6] as int) as buildUpPlayDribbling,
+split(team_attr_details_str, ",")[7] as buildUpPlayDribblingClass,
+cast(split(team_attr_details_str, ",")[8] as int) as buildUpPlayPassing,
+split(team_attr_details_str, ",")[9] as buildUpPlayPassingClass,
+split(team_attr_details_str, ",")[10] as buildUpPlayPositioningClass,
+cast(split(team_attr_details_str, ",")[11] as int) as chanceCreationPassing,
+split(team_attr_details_str, ",")[12] as chanceCreationPassingClass,
+cast(split(team_attr_details_str, ",")[13] as int) as chanceCreationCrossing,
+split(team_attr_details_str, ",")[14] as chanceCreationCrossingClass,
+cast(split(team_attr_details_str, ",")[15] as int) as chanceCreationShooting,
+split(team_attr_details_str, ",")[16] as chanceCreationShootingClass,
+split(team_attr_details_str, ",")[17] as chanceCreationPositioningClass,
+cast(split(team_attr_details_str, ",")[18] as int) as defencePressure,
+split(team_attr_details_str, ",")[19] as defencePressureClass,
+cast(split(team_attr_details_str, ",")[20] as int) as defenceAggression,
+split(team_attr_details_str, ",")[21] as defenceAggressionClass,
+cast(split(team_attr_details_str, ",")[22] as int) as defenceTeamWidth,
+split(team_attr_details_str, ",")[23] as defenceTeamWidthClass,
+split(team_attr_details_str, ",")[24] as defenceDefenderLineClass
+from
+soccer.team_attributes_str
+
+select count(*) from soccer.team_attributes_str
+
+select count(*) from soccer.team_attributes
+
+select * from soccer.team_attributes limit 10
+
+
+9. Player Attributes table,
+
+CREATE TABLE IF NOT EXISTS soccer.player_attributes_str (
+player_attr_details_str String)
+STORED AS TEXTFILE
+tblproperties("skip.header.line.count"="1");
+
+
+LOAD DATA INPATH '/tmp/soccer-dataset/Player_Attributes.csv'
+OVERWRITE INTO TABLE soccer.player_attributes_str;
+
+10.Splitting the data and creating soccer.player_attributes table,
+
+CREATE TABLE IF NOT EXISTS soccer.player_attributes
+AS
+select cast(split(player_attr_details_str, ",")[0] as int) as id,
+cast(split(player_attr_details_str, ",")[1] as int) as player_fifa_api_id,
+cast(split(player_attr_details_str, ",")[2] as int) as player_api_id,
+split(player_attr_details_str, ",")[3] as player_date,
+cast(split(player_attr_details_str, ",")[4] as int) as overall_rating,
+cast(split(player_attr_details_str, ",")[5] as int) as potential,
+split(player_attr_details_str, ",")[6] as preferred_foot,
+split(player_attr_details_str, ",")[7] as attacking_work_rate,
+split(player_attr_details_str, ",")[8] as defensive_work_rate,
+cast(split(player_attr_details_str, ",")[9] as int) as crossing,
+cast(split(player_attr_details_str, ",")[10] as int) as finishing,
+cast(split(player_attr_details_str, ",")[11] as int) as heading_accuracy,
+cast(split(player_attr_details_str, ",")[12] as int) as short_passing,
+cast(split(player_attr_details_str, ",")[13] as int) as volleys,
+cast(split(player_attr_details_str, ",")[14] as int) as dribbling,
+cast(split(player_attr_details_str, ",")[15] as int) as curve,
+cast(split(player_attr_details_str, ",")[16] as int) as free_kick_accuracy,
+cast(split(player_attr_details_str, ",")[17] as int) as long_passing,
+cast(split(player_attr_details_str, ",")[18] as int) as ball_control,
+cast(split(player_attr_details_str, ",")[19] as int) as acceleration,
+cast(split(player_attr_details_str, ",")[20] as int) as sprint_speed,
+cast(split(player_attr_details_str, ",")[21] as int) as agility,
+cast(split(player_attr_details_str, ",")[22] as int) as reactions,
+cast(split(player_attr_details_str, ",")[23] as int) as balance,
+cast(split(player_attr_details_str, ",")[24] as int) as shot_power,
+cast(split(player_attr_details_str, ",")[25] as int) as jumping,
+cast(split(player_attr_details_str, ",")[26] as int) as stamina,
+cast(split(player_attr_details_str, ",")[27] as int) as strength,
+cast(split(player_attr_details_str, ",")[28] as int) as long_shots,
+cast(split(player_attr_details_str, ",")[29] as int) as aggression,
+cast(split(player_attr_details_str, ",")[30] as int) as interceptions,
+cast(split(player_attr_details_str, ",")[31] as int) as positioning,
+cast(split(player_attr_details_str, ",")[32] as int) as vision,
+cast(split(player_attr_details_str, ",")[33] as int) as penalties,
+cast(split(player_attr_details_str, ",")[34] as int) as marking,
+cast(split(player_attr_details_str, ",")[35] as int) as standing_tackle,
+cast(split(player_attr_details_str, ",")[36] as int) as sliding_tackle,
+cast(split(player_attr_details_str, ",")[37] as int) as gk_diving,
+cast(split(player_attr_details_str, ",")[38] as int) as gk_handling,
+cast(split(player_attr_details_str, ",")[39] as int) as gk_kicking,
+cast(split(player_attr_details_str, ",")[40] as int) as gk_positioning,
+cast(split(player_attr_details_str, ",")[41] as int) as gk_reflexes
+from
+soccer.player_attributes_str
+
+
+select count(*) from soccer.player_attributes_str
+
+select count(*) from soccer.player_attributes
+
+select * from soccer.player_attributes limit 10
+
+11. Match table,
+
+CREATE TABLE IF NOT EXISTS soccer.matches_str (
+match_details_str String)
+STORED AS TEXTFILE
+tblproperties("skip.header.line.count"="1");
+
+
+LOAD DATA INPATH '/tmp/soccer-dataset/Match.csv'
+OVERWRITE INTO TABLE soccer.matches_str;
+
+
+10.Splitting the data and creating soccer.matches table,
+
+CREATE TABLE IF NOT EXISTS soccer.matches
+AS
+select cast(split(match_details_str, ",")[0] as int) as id,
+cast(split(match_details_str, ",")[1] as int) as country_id,
+cast(split(match_details_str, ",")[2] as int) as league_id,
+split(match_details_str, ",")[3] as season,
+cast(split(match_details_str, ",")[4] as int) as stage,
+split(match_details_str, ",")[5] as match_date,
+cast(split(match_details_str, ",")[6] as int) as match_api_id,
+cast(split(match_details_str, ",")[7] as int) as home_team_api_id,
+cast(split(match_details_str, ",")[8] as int) as away_team_api_id,
+cast(split(match_details_str, ",")[9] as int) as home_team_goal,
+cast(split(match_details_str, ",")[10] as int) as away_team_goal,
+split(match_details_str, ",")[12] as home_player_X1,
+split(match_details_str, ",")[13] as home_player_X2,
+split(match_details_str, ",")[14] as home_player_X3,
+split(match_details_str, ",")[15] as home_player_X4,
+split(match_details_str, ",")[16] as home_player_X5,
+split(match_details_str, ",")[17] as home_player_X6,
+split(match_details_str, ",")[18] as home_player_X7,
+split(match_details_str, ",")[19] as home_player_X8,
+split(match_details_str, ",")[20] as home_player_X9,
+split(match_details_str, ",")[21] as home_player_X10,
+split(match_details_str, ",")[22] as home_player_X11,
+split(match_details_str, ",")[23] as away_player_X1,
+split(match_details_str, ",")[24] as away_player_X2,
+split(match_details_str, ",")[25] as away_player_X3,
+split(match_details_str, ",")[26] as away_player_X4,
+split(match_details_str, ",")[27] as away_player_X5,
+split(match_details_str, ",")[28] as away_player_X6,
+split(match_details_str, ",")[29] as away_player_X7,
+split(match_details_str, ",")[30] as away_player_X8,
+split(match_details_str, ",")[31] as away_player_X9,
+split(match_details_str, ",")[32] as away_player_X10,
+split(match_details_str, ",")[33] as away_player_X11,
+split(match_details_str, ",")[34] as home_player_Y1,
+split(match_details_str, ",")[35] as home_player_Y2,
+split(match_details_str, ",")[36] as home_player_Y3,
+split(match_details_str, ",")[37] as home_player_Y4,
+split(match_details_str, ",")[38] as home_player_Y5,
+split(match_details_str, ",")[39] as home_player_Y6,
+split(match_details_str, ",")[40] as home_player_Y7,
+split(match_details_str, ",")[41] as home_player_Y8,
+split(match_details_str, ",")[42] as home_player_Y9,
+split(match_details_str, ",")[43] as home_player_Y10,
+split(match_details_str, ",")[44] as home_player_Y11,
+split(match_details_str, ",")[45] as away_player_Y1,
+split(match_details_str, ",")[46] as away_player_Y2,
+split(match_details_str, ",")[47] as away_player_Y3,
+split(match_details_str, ",")[48] as away_player_Y4,
+split(match_details_str, ",")[49] as away_player_Y5,
+split(match_details_str, ",")[50] as away_player_Y6,
+split(match_details_str, ",")[51] as away_player_Y7,
+split(match_details_str, ",")[52] as away_player_Y8,
+split(match_details_str, ",")[53] as away_player_Y9,
+split(match_details_str, ",")[54] as away_player_Y10,
+split(match_details_str, ",")[55] as away_player_Y11,
+split(match_details_str, ",")[56] as home_player_1,
+split(match_details_str, ",")[57] as home_player_2,
+split(match_details_str, ",")[58] as home_player_3,
+split(match_details_str, ",")[59] as home_player_4,
+split(match_details_str, ",")[60] as home_player_5,
+split(match_details_str, ",")[61] as home_player_6,
+split(match_details_str, ",")[62] as home_player_7,
+split(match_details_str, ",")[63] as home_player_8,
+split(match_details_str, ",")[64] as home_player_9,
+split(match_details_str, ",")[65] as home_player_10,
+split(match_details_str, ",")[66] as home_player_11,
+split(match_details_str, ",")[67] as away_player_1,
+split(match_details_str, ",")[68] as away_player_2,
+split(match_details_str, ",")[69] as away_player_3,
+split(match_details_str, ",")[70] as away_player_4,
+split(match_details_str, ",")[71] as away_player_5,
+split(match_details_str, ",")[72] as away_player_6,
+split(match_details_str, ",")[73] as away_player_7,
+split(match_details_str, ",")[74] as away_player_8,
+split(match_details_str, ",")[75] as away_player_9,
+split(match_details_str, ",")[76] as away_player_10,
+split(match_details_str, ",")[77] as away_player_11,
+cast(split(match_details_str, ",")[78] as int) as goal,
+cast(split(match_details_str, ",")[79] as int) as shoton,
+cast(split(match_details_str, ",")[80] as int) as shotoff,
+cast(split(match_details_str, ",")[81] as int) as foulcommit,
+cast(split(match_details_str, ",")[82] as int) as card,
+cast(split(match_details_str, ",")[83] as int) as crosses,
+cast(split(match_details_str, ",")[84] as int) as corner,
+cast(split(match_details_str, ",")[85] as float) as possession,
+split(match_details_str, ",")[86] as B365H,
+split(match_details_str, ",")[87] as B365D,
+split(match_details_str, ",")[88] as B365A,
+split(match_details_str, ",")[89] as BWH,
+split(match_details_str, ",")[90] as BWD,
+split(match_details_str, ",")[91] as BWA,
+split(match_details_str, ",")[92] as IWH,
+split(match_details_str, ",")[93] as IWD,
+split(match_details_str, ",")[94] as IWA,
+split(match_details_str, ",")[95] as LBH,
+split(match_details_str, ",")[96] as LBD,
+split(match_details_str, ",")[97] as LBA,
+split(match_details_str, ",")[98] as PSH,
+split(match_details_str, ",")[99] as PSD,
+split(match_details_str, ",")[100] as PSA,
+split(match_details_str, ",")[101] as WHH,
+split(match_details_str, ",")[102] as WHD,
+split(match_details_str, ",")[103] as WHA,
+split(match_details_str, ",")[104] as SJH,
+split(match_details_str, ",")[105] as SJD,
+split(match_details_str, ",")[106] as SJA,
+split(match_details_str, ",")[107] as VCH,
+split(match_details_str, ",")[108] as VCD,
+split(match_details_str, ",")[109] as VCA,
+split(match_details_str, ",")[110] as GBH,
+split(match_details_str, ",")[111] as GBD,
+split(match_details_str, ",")[112] as GBA,
+split(match_details_str, ",")[113] as BSH,
+split(match_details_str, ",")[114] as BSD,
+split(match_details_str, ",")[115] as BSA
+from
+soccer.matches_str
+
+select count(*) from soccer.matches_str
+
+select count(*) from soccer.matches
+
+select * from soccer.matches limit 10
+
+
+				Queries
+
+1. Away goals top 10
+SELECT away_team_api_id, sum(away_team_goal) as away_team_goal_count, b.team_long_name, b.team_short_name
+FROM matches as a JOIN teams as b on a.away_team_api_id = b.team_app_id
+GROUP BY
+away_team_api_id, b.team_long_name, b.team_short_name
+ORDER BY
+away_team_goal_count DESC
+LIMIT 10
+
+2. away goals top 10 winning cause
+
+SELECT away_team_api_id, sum(away_team_goal) as away_team_goal_count, b.team_long_name, b.team_short_name
+FROM matches as a JOIN teams as b on a.away_team_api_id = b.team_app_id
+WHERE
+a.away_team_goal > a.home_team_goal
+GROUP BY
+away_team_api_id, b.team_long_name, b.team_short_name
+ORDER BY
+away_team_goal_count DESC
+LIMIT 10
+
+3. Yearly status
+
+
+
+CREATE TABLE team_yearly_home_stats
+as
+SELECT home_team_api_id as team_id, split(match_date, "-")[0] as match_year, sum(home_team_goal) as yearly_goals  from matches 
+GROUP BY home_team_api_id, split(match_date, "-")[0]
+
+CREATE TABLE team_yearly_away_stats
+as
+SELECT away_team_api_id as team_id, split(match_date, "-")[0] as match_year, sum(away_team_goal) as yearly_goals  from matches 
+GROUP BY away_team_api_id, split(match_date, "-")[0]
+
+
+CREATE TABLE team_yearly_stats
+as
+SELECT a.team_id as team_id, a.match_year as match_year,
+(a.yearly_goals + b.yearly_goals) as team_yearly_goals
+FROM
+team_yearly_home_stats as a
+join
+team_yearly_away_stats as b
+on 
+a.team_id = b.team_id
+and
+a.match_year = b.match_year
+
+
+SELECT a.team_id as team_id, a.match_year as match_year, a.team_yearly_goals,
+b.team_long_name, b.team_short_name
+FROM
+team_yearly_stats as a
+join
+teams as b
+on 
+a.team_id = b.team_app_id
+ORDER BY a.team_yearly_goals DESC
+LIMIT 10
+
+4. Yearly winning counts
+
+
+CREATE TABLE team_winnings
+as
+SELECT id,
+CASE 
+WHEN home_team_goal > away_team_goal THEN home_team_api_id
+WHEN home_team_goal < away_team_goal THEN away_team_api_id
+ELSE -1
+END AS winner,
+split(match_date, "-")[0] as match_year
+FROM matches
+
+SELECT winner, b.team_long_name, b.team_short_name,  match_year, count(*) as yearly_win_count
+FROM
+team_winnings as a
+join
+teams as b
+on 
+a.winner = b.team_app_id
+WHERE
+winner != -1 and match_year is not null
+GROUP BY winner, match_year, b.team_long_name, b.team_short_name
+ORDER BY yearly_win_count DESC
+LIMIT 10
+
+CREATE TABLE team_yearly_wins
+AS
+SELECT winner, match_year, count(*) as yearly_win_count
+FROM
+team_winnings
+GROUP BY winner, match_year
+
+5. Top 10 max draws in a year,
+
+CREATE TABLE team_yearly_home_draws
+as
+SELECT home_team_api_id as team_id, split(match_date, "-")[0] as match_year, 
+count(*) as yearly_draws  from matches 
+where 
+home_team_goal == away_team_goal
+GROUP BY home_team_api_id, split(match_date, "-")[0]
+
+CREATE TABLE team_yearly_away_draws
+as
+SELECT away_team_api_id as team_id, split(match_date, "-")[0] as match_year, 
+count(*) as yearly_draws  from matches
+where 
+home_team_goal == away_team_goal
+GROUP BY away_team_api_id, split(match_date, "-")[0]
+
+
+CREATE TABLE team_yearly_draws
+as
+SELECT a.team_id as team_id, a.match_year as match_year,
+(a.yearly_goals + b.yearly_goals) as team_yearly_draws
+FROM
+team_yearly_home_draws as a
+join
+team_yearly_away_draws as b
+on 
+a.team_id = b.team_id
+and
+a.match_year = b.match_year
+
+SELECT 
+team_id, b.team_long_name, b.team_short_name, yearly_draws
+FROM
+team_yearly_draws as a
+join
+teams as be
+a.team_id == b.team_app_id
+ORDER BY yearly_draws DESC
+LIMIT 10
+
+6. Create yearly loss count for each team
+
+CREATE TABLE team_yearly_home_losses
+as
+SELECT home_team_api_id as team_id, split(match_date, "-")[0] as match_year, 
+count(*) as yearly_losses  from matches 
+where 
+home_team_goal < away_team_goal
+GROUP BY home_team_api_id, split(match_date, "-")[0]
+
+CREATE TABLE team_yearly_away_losses
+as
+SELECT away_team_api_id as team_id, split(match_date, "-")[0] as match_year, 
+count(*) as yearly_losses  from matches
+where 
+home_team_goal > away_team_goal
+GROUP BY away_team_api_id, split(match_date, "-")[0]
+
+
+CREATE TABLE team_yearly_losses
+as
+SELECT a.team_id as team_id, a.match_year as match_year,
+(a.yearly_losses + b.yearly_losses) as team_yearly_losses
+FROM
+team_yearly_home_losses as a
+join
+team_yearly_away_losses as b
+on 
+a.team_id = b.team_id
+and
+a.match_year = b.match_year
+
+---- For wins ------
+
+CREATE TABLE team_yearly_wins
+AS
+SELECT winner, match_year, count(*) as yearly_win_count
+FROM
+team_winnings
+GROUP BY winner, match_year
+
+7. Consolidated table
+
+CREATE TABLE team_yearly_consolidated
+AS
+SELECT a.winner as team_id, a.match_year as match_year,
+a.yearly_win_count as yearly_win_count,
+b.team_yearly_draws, c.team_yearly_losses
+FROM
+team_yearly_wins as a
+full outer join 
+team_yearly_draws as b
+on 
+a.winner=b.team_id
+full outer join
+team_yearly_losses as c
+on 
+a.winner=c.team_id
+
+8. Consolidated points table,
+
+CREATE TABLE team_points_table_interim
+AS
+SELECT team_id, match_year,
+
+CASE
+	WHEN yearly_win_count is not null THEN yearly_win_count
+	ELSE 0 
+END AS yearly_win_count,
+
+CASE
+	WHEN team_yearly_draws is not null THEN team_yearly_draws
+	ELSE 0 
+END AS yearly_draw_count,
+
+CASE
+	WHEN team_yearly_losses is not null THEN team_yearly_losses
+	ELSE 0 
+END AS yearly_loss_count
+
+FROM
+team_yearly_consolidated
+
+
+CREATE TABLE team_yearly_points
+AS
+SELECT team_id, match_year,
+(yearly_win_count*3+yearly_draw_count*1) as yearly_points
+FROM
+team_points_table_interim
+
+

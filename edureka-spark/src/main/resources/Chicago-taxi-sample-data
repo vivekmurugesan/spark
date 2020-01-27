@@ -1,0 +1,30 @@
+Trip ID,Taxi ID,Trip Start Timestamp,Trip End Timestamp,Trip Seconds,Trip Miles,Pickup Census Tract,Dropoff Census Tract,Pickup Community Area,Dropoff Community Area,Fare,Tips,Tolls,Extras,Trip Total,Payment Type,Company,Pickup Centroid Latitude,Pickup Centroid Longitude,Pickup Centroid Location,Dropoff Centroid Latitude,Dropoff Centroid Longitude,Dropoff Centroid Location,Community Areas
+2	ace732e15017fdde9f4a13a080d4eeb6ee7229fc,3f959f9e67fb058ff7179003776c6db313d0faee0424799df92ca0c07134836fa6186ac7217c193dd51d147dce90dcc8e8e9abc840fec1fc9ed67de76e72556a,02/21/2017 12:15:00 PM,02/21/2017 12:15:00 PM,360,3.4,17031980000,17031770700,76,,11.00,3.00,0.00,4.00,18.50,Credit Card,Sun Taxi,41.97907082,-87.903039661,POINT (-87.9030396611 41.9790708201),41.982775009,-87.8773054,POINT (-87.8773053996 41.9827750091),75
+3	e5deeb46168039c0770c21b7fcd61c7765cbf492,6cd9b35df74e4b9138f2b63321643196d7172734feba57701d8f55f42c17030aff654267301d0ab01946eeae4ee1f3d47fdfef9639eb8c82c9a9545a959dd1ac,02/21/2017 06:45:00 PM,02/21/2017 07:00:00 PM,900,1.2,17031330100,17031839100,33,32,9.50,0.00,0.00,0.00,9.50,Cash,Globe Taxi,41.859349715,-87.617358006,POINT (-87.6173580061 41.859349715),41.880994471,-87.632746489,POINT (-87.6327464887 41.8809944707),34
+4	7ac59cb7be06e63e303a0c2701e0f96313066cc4,c1305c4490085b703eed20e95ab0c479c954ae3735a963578627d563fadbf2cc859e12ebcd12c4b8f34b7eb2d6c4782b17b56ba8ddfe896fff5763105e81e050,02/22/2017 05:30:00 PM,02/22/2017 06:15:00 PM,2460,11.1,17031980100,17031320400,56,32,32.00,7.20,0.00,4.00,43.70,Credit Card,City Service,41.785998518,-87.750934289,POINT (-87.7509342894 41.785998518),41.877406123,-87.621971652,POINT (-87.6219716519 41.8774061234),53
+5
+
+trip_id
+taxi_id
+trip_start_time
+trip_end_time
+trip_seconds
+trip_miles
+pickup_tract
+dropoff_tract
+pickup_community
+dropoff_community
+trip_fare
+tip_amt
+toll_amt
+extra_amt
+trip_total_amt
+payment_type
+company
+pickup_latitude
+pickup_longitude
+pickup_location
+dropoff_latitude
+dropoff_longitude
+dropoff_location
+community_areas
