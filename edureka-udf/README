@@ -1,0 +1,10 @@
+Run the following commands in the hive console to enable the udf.
+
+hive> addjar edureka-udf.jar
+hive> create temporary function home_team_scored using "com.edureka.hive.udf.SoccerUDF";
+hive> create temporary function find_winner using "com.edureka.hive.udf.SoccerWinnerUDF";
+
+Sample queries with udf.
+
+hive> select count(*) from matches where home_team_scored(home_team_goal) is TRUE
+hive> select find_winner(home_team_api_id, away_team_api_id, home_team_goal, away_team_goal) from matches limit 20
