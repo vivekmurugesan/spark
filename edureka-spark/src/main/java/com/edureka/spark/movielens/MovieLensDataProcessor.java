@@ -220,7 +220,56 @@ public class MovieLensDataProcessor implements Serializable {
 		// Filtering for only popular movies with at least 10K ratings..
 		joinWithMoviesAndPrint1(sc, ratingAvgRdd.filter(x -> x._2._2 >= 10000).mapToPair(x -> new Tuple2<>(x._1, x._2._1)), moviesRdd, "AvgRating_AtLeast10K");
 		
+		computeGenreLevelUserPref(sc, 
+				moviesRdd, ratingsRdd);
+	}
 	
+	/**
+	 * Answer to Question 6: 
+	 * To compute the genre level preference for every user. Which is 
+	 * a ratio between <user_id, genre_apperance_count/user_rating_count>
+	 * @param sc
+	 * @param moviesRdd
+	 * @param ratingsRdd
+	 */
+	public void computeGenreLevelUserPref(JavaSparkContext sc, 
+			JavaPairRDD<Integer, Movie> moviesRdd, 
+			JavaPairRDD<Integer, Tuple2<Integer, Double>> ratingsRdd) {
+
+		JavaPairRDD<Integer, Integer> userRatingCount = 
+				ratingsRdd.mapToPair(x -> new Tuple2<>(x._2._1, 1)).reduceByKey((x,y) -> x+y);
+		JavaPairRDD<Integer, Movie> userIdMovieRdd =
+				ratingsRdd.mapToPair(x -> new Tuple2<>(x._1, x._2._1)).join(moviesRdd)
+				.mapToPair(x-> x._2);
+
+		JavaPairRDD<Integer, String> userGenreRdd = 
+				userIdMovieRdd.flatMapToPair(x -> {
+					int userId = x._1;
+					List<String> genres = x._2.getGenres();
+					List<Tuple2<Integer, String>> tuples = new ArrayList<>();
+					for(String genre : genres) 
+						tuples.add(new Tuple2<>(userId, genre));
+					return tuples.iterator();
+				});
+
+		JavaPairRDD<Integer, Tuple2<String, Integer>> userGenreCountRdd = 
+				userGenreRdd.mapToPair(x -> new Tuple2<>(x._1+"_"+x._2, 1)).reduceByKey((x,y) -> x+y)
+				.mapToPair(x -> {
+					String[] tokens = x._1.split("_");
+					int userId = Integer.parseInt(tokens[0]);
+					String genre = tokens[1];
+					int count = x._2;
+					return new Tuple2<Integer, Tuple2<String, Integer>>(userId, new Tuple2<>(genre, count));
+				});
+		JavaPairRDD<Integer, Tuple2<String, Double>> userGenrePrefScoreRdd = 
+				userGenreCountRdd.join(userRatingCount).mapToPair(x -> {
+					int ratingCount = x._2._2;
+					int genreCount = x._2._1._2;
+					return new Tuple2<>(x._1, new Tuple2<>(x._2._1._1, genreCount/(ratingCount*1.0)));
+				});
+		
+		userGenrePrefScoreRdd.map(x -> x._1 +"," + x._2._1 + "," + x._2._2)
+			.saveAsTextFile(outputPath + "/User-Genre-PrefScore");
 	}
 	
 	private void joinWithMoviesAndPrint(JavaSparkContext sc, 
