@@ -16,6 +16,7 @@ import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 
 import scala.Tuple2;
+import scala.Tuple3;
 
 /**
  * 
@@ -105,11 +106,13 @@ public class MovieLensDataProc implements Serializable {
 				ratingsRdd.mapToPair(x -> new Tuple2<>(x._1,1)).reduceByKey((x,y) -> x+y);
 		joinWithMoviesAndPrint(sc, moviesRatingCount, moviesRdd, "RatingCount");
 		
+		
 		moviesRatingCount.saveAsTextFile(outputDir +"/RatingCount");
 		
 		JavaPairRDD<Integer, Double> ratingSumRdd = ratingsRdd.mapToPair(x -> new
 				Tuple2<>(x._1, x._2._2)).foldByKey(0.0, (x,y) -> x+y );
-		joinWithMoviesAndPrint1(sc, ratingSumRdd, moviesRdd, "CumulativeRating");
+		joinWithMoviesAndPrintWithCount(sc, 
+				ratingSumRdd.join(moviesRatingCount), moviesRdd, "CumulativeRating");
 
 		JavaPairRDD<Integer, Tuple2<Double, Integer>> ratingAvgRdd =
 				ratingSumRdd.join(moviesRatingCount).mapToPair(x -> new Tuple2<>(x._1,
@@ -117,12 +120,24 @@ public class MovieLensDataProc implements Serializable {
 		
 		ratingAvgRdd.map(x -> x._1 + "," + x._2._2+"," +x._2._1).saveAsTextFile(outputDir +"/RatingCountAvg");
 		
-		joinWithMoviesAndPrint1(sc, ratingAvgRdd.mapToPair(x -> new Tuple2<>(x._1, x._2._1)), moviesRdd, "AvgRating");
+		joinWithMoviesAndPrintWithCount(sc, ratingAvgRdd, moviesRdd, "AvgRating");
 
-		joinWithMoviesAndPrint1(sc, ratingAvgRdd.filter(x -> x._2._2 >= 10000).mapToPair(x -> new Tuple2<>(x._1, x._2._1)), moviesRdd, "AvgRating_AtLeast10K");
+		joinWithMoviesAndPrintWithCount(sc, ratingAvgRdd.filter(x -> x._2._2 >= 10000), moviesRdd, "AvgRating_AtLeast10K");
 		
 		// Populating the all possible genre list from the data..
 		this.createAllGenreList(sc, moviesRdd);
+		
+		joinWithMoviesForGenreWiseStat(sc, moviesRatingCount, moviesRdd, "RatingCount", this.allGenreList);
+		
+		joinWithMoviesForGenreWiseStatWithCount(sc, 
+				ratingSumRdd.join(moviesRatingCount), moviesRdd, 
+				"CumulativeRating", this.allGenreList);
+		
+		joinWithMoviesForGenreWiseStatWithCount(sc, ratingAvgRdd, moviesRdd, 
+				"AvgRating", this.allGenreList);
+		
+		joinWithMoviesForGenreWiseStatWithCount(sc, ratingAvgRdd.filter(x -> x._2._2 >= 10000), 
+				moviesRdd, "AvgRating_AtLeast10K", this.allGenreList);
 		
 		generateUserGenrePreferences(sc, ratingsRdd, moviesRdd);
 
@@ -297,14 +312,83 @@ public class MovieLensDataProc implements Serializable {
 		
 	}
 	
-	private void joinWithMoviesAndPrint1(JavaSparkContext sc, JavaPairRDD<Integer, Double> moviesStatRdd, JavaPairRDD<Integer, Movie> moviesRdd, String type) {
-		List<Tuple2<Integer, Tuple2<Double, Movie>>>  top20Movies = 
+	private void joinWithMoviesForGenreWiseStat(JavaSparkContext sc, JavaPairRDD<Integer, Integer> moviesStatRdd, 
+			JavaPairRDD<Integer, Movie> moviesRdd,
+			String type, List<String> genreList) {
+		
+		JavaPairRDD<Integer, Tuple2<String, Integer>> movieStatGenreRdd = 
+		moviesStatRdd.join(moviesRdd).flatMapToPair(x -> {
+			List<String> genres = x._2._2.getGenres();
+			List<Tuple2<Integer,Tuple2<String, Integer>>> tuples = new ArrayList<>();
+			
+			for(String g : genres) {
+				tuples.add(new Tuple2<>(x._1, new Tuple2<>(g, x._2._1)));
+			}
+			
+			return tuples.iterator();
+		});
+		
+		for(String genre : genreList) {
+			JavaPairRDD<Integer, Integer> generWiseMovieStat =
+				movieStatGenreRdd.filter(x -> genre.equalsIgnoreCase(x._2._1))
+				.mapToPair(x -> new Tuple2<>(x._1, x._2._2));
+			
+			List<Tuple2<Integer, Tuple2<Integer, Movie>>>  top20Movies = 
+					generWiseMovieStat.join(moviesRdd).takeOrdered(20, new SerializableComparator());
+
+			JavaRDD<Tuple2<Integer, Tuple2<Integer, Movie>>> top20MoviesRdd = 
+					sc.parallelize(top20Movies);
+			
+			top20MoviesRdd.map(x -> x._1 +"," + x._2._1 + "," + x._2._2).saveAsTextFile(outputDir+
+					"/GenreWise/" + genre+"/Top20-"+type);;
+		}
+		
+
+	}
+	
+	private void joinWithMoviesAndPrintWithCount(JavaSparkContext sc, JavaPairRDD<Integer, Tuple2<Double, Integer>> moviesStatRdd, 
+			JavaPairRDD<Integer, Movie> moviesRdd, String type) {
+		List<Tuple2<Integer, Tuple2<Tuple2<Double,Integer>, Movie>>>  top20Movies = 
 				moviesStatRdd.join(moviesRdd).takeOrdered(20, new SerializableComparatorDouble());
 
-		JavaRDD<Tuple2<Integer, Tuple2<Double, Movie>>> top20MoviesRdd = 
+		JavaRDD<Tuple2<Integer, Tuple2<Tuple2<Double,Integer>, Movie>>> top20MoviesRdd = 
 				sc.parallelize(top20Movies);
 		
-		top20MoviesRdd.map(x -> x._1 +"," + x._2._1 + "," + x._2._2).saveAsTextFile(outputDir+"/Top20-"+type);;
+		top20MoviesRdd.map(x -> x._1 +"," + x._2._1._1+"," + x._2._1._2 + "," + x._2._2).saveAsTextFile(outputDir+"/Top20-"+type);;
+
+	}
+	
+	private void joinWithMoviesForGenreWiseStatWithCount(JavaSparkContext sc, JavaPairRDD<Integer, Tuple2<Double, Integer>> moviesStatRdd, 
+			JavaPairRDD<Integer, Movie> moviesRdd, 
+			String type, List<String> genreList) {
+		
+		JavaPairRDD<Integer, Tuple3<String, Double, Integer>> movieStatGenreRdd = 
+		moviesStatRdd.join(moviesRdd).flatMapToPair(x -> {
+			List<String> genres = x._2._2.getGenres();
+			List<Tuple2<Integer,Tuple3<String, Double, Integer>>> tuples = new ArrayList<>();
+			
+			for(String g : genres) {
+				tuples.add(new Tuple2<>(x._1, new Tuple3<>(g, x._2._1._1, x._2._1._2)));
+			}
+			
+			return tuples.iterator();
+		});
+		
+		for(String genre : genreList) {
+			JavaPairRDD<Integer, Tuple2<Double, Integer>> generWiseMovieStat =
+				movieStatGenreRdd.filter(x -> genre.equalsIgnoreCase(x._2._1()))
+				.mapToPair(x -> new Tuple2<>(x._1, new Tuple2<>(x._2._2(), x._2._3())));
+			
+			List<Tuple2<Integer, Tuple2<Tuple2<Double,Integer>, Movie>>>  top20Movies = 
+					generWiseMovieStat.join(moviesRdd).takeOrdered(20, new SerializableComparatorDouble());
+
+			JavaRDD<Tuple2<Integer, Tuple2<Tuple2<Double,Integer>, Movie>>> top20MoviesRdd = 
+					sc.parallelize(top20Movies);
+			
+			top20MoviesRdd.map(x -> x._1 +"," + x._2._1._1+"," + x._2._1._2 + "," + x._2._2).saveAsTextFile(outputDir+
+					"/GenreWise/" + genre+"/Top20-"+type);;
+		}
+		
 
 	}
 	
@@ -322,18 +406,19 @@ public class MovieLensDataProc implements Serializable {
 		
 	}
 
-	static class SerializableComparatorDouble implements Serializable, Comparator<Tuple2<Integer, Tuple2<Double, Movie>>> {
+	static class SerializableComparatorDouble implements Serializable, Comparator<Tuple2<Integer, 
+		Tuple2<Tuple2<Double, Integer>, Movie>>> {
 
 		/**
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
 
-		
 		@Override
-		public int compare(Tuple2<Integer, Tuple2<Double, Movie>> o1, Tuple2<Integer, Tuple2<Double, Movie>> o2) {
+		public int compare(Tuple2<Integer, Tuple2<Tuple2<Double, Integer>, Movie>> o1,
+				Tuple2<Integer, Tuple2<Tuple2<Double, Integer>, Movie>> o2) {
 			// TODO Auto-generated method stub
-			return o2._2._1.compareTo(o1._2._1);
+			return o2._2._1._1.compareTo(o1._2._1._1);
 		}
 		
 	}
